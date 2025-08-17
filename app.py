@@ -55,7 +55,7 @@ st.markdown("""
 
 # لود دیتاست
 try:
-    df = pd.read_csv("diabetest.csv")  # مسیر دیتاست
+    df = pd.read_csv("diabetes.csv")  # مسیر دیتاست
 except:
     st.error("لطفاً دیتاست diabetest.csv رو آپلود کنید!")
     st.stop()
