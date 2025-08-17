@@ -128,34 +128,35 @@ st.header("نتایج مدل")
 st.markdown("""
 مدل **Random Forest** با دقت **~94%** بهترین عملکرد را قبل از حذف ناهنجاری‌ها داشته است.
 """)
-results_df = pd.DataFrame([
-    {'Model': 'Random Forest', 'Accuracy': 0.94, 'Precision': 0.92, 'Recall': 0.90, 'F1-Score': 0.91, 'ROC-AUC': 0.95}
-])  # مقادیر تقریبی، با نتایج واقعی جایگزین کن
-st.dataframe(results_df)
-st.caption("این جدول معیارهای عملکرد مدل Random Forest را نشان می‌دهد.")
 
-# ماتریس درهم‌ریختگی
-st.subheader("ماتریس درهم‌ریختگی (Random Forest)")
 try:
     model_rf = joblib.load("random_forest_model.pkl")
-    scaler = joblib.load("scaler.pkl")
-except:
-    st.error("لطفاً فایل‌های مدل و اسکیلر را آپلود کنید!")
-    st.stop()
+    scaler = StandardScaler()  # بازسازی اسکیلر
+    X = df.drop('Outcome', axis=1)
+    y = df['Outcome']
+    X_scaled = scaler.fit_transform(X)  # فیت با دیتاست فعلی
+    y_pred_rf = model_rf.predict(X_scaled)
+    results_df = pd.DataFrame([
+        {'Model': 'Random Forest', 'Accuracy': accuracy_score(y, y_pred_rf), 
+         'Precision': precision_score(y, y_pred_rf), 'Recall': recall_score(y, y_pred_rf), 
+         'F1-Score': f1_score(y, y_pred_rf), 'ROC-AUC': roc_auc_score(y, y_pred_rf)}
+    ])
+    st.dataframe(results_df)
+    st.caption("این جدول معیارهای عملکرد مدل Random Forest را نشان می‌دهد.")
 
-X = df.drop('Outcome', axis=1)
-y = df['Outcome']
-X_scaled = scaler.transform(X)
-y_pred_rf = model_rf.predict(X_scaled)
-cm = confusion_matrix(y, y_pred_rf)
-fig, ax = plt.subplots(figsize=(5, 5))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-plt.title("ماتریس درهم‌ریختگی - Random Forest")
-plt.ylabel("واقعی")
-plt.xlabel("پیش‌بینی‌شده")
-st.pyplot(fig)
-st.caption("این ماتریس پیش‌بینی‌های درست و نادرست مدل Random Forest را نشان می‌دهد.")
-
+    # ماتریس درهم‌ریختگی
+    st.subheader("ماتریس درهم‌ریختگی (Random Forest)")
+    cm = confusion_matrix(y, y_pred_rf)
+    fig, ax = plt.subplots(figsize=(5, 5))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+    plt.title("ماتریس درهم‌ریختگی - Random Forest")
+    plt.ylabel("واقعی")
+    plt.xlabel("پیش‌بینی‌شده")
+    st.pyplot(fig)
+    st.caption("این ماتریس پیش‌بینی‌های درست و نادرست مدل Random Forest را نشان می‌دهد.")
+except Exception as e:
+    st.error(f"خطا در لود مدل یا محاسبه ماتریس: {e}")
+    
 # پیش‌بینی و پیشنهاد رژیم غذایی
 st.header("پیش‌بینی و پیشنهاد رژیم غذایی")
 st.write("مقادیر ویژگی‌ها را وارد کنید:")
