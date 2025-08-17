@@ -54,11 +54,16 @@ st.markdown("""
 """)
 
 # لود دیتاست
-try:
-    df = pd.read_csv("diabetes.csv")  # مسیر دیتاست
-except:
-    st.error("لطفاً دیتاست diabetest.csv رو آپلود کنید!")
-    st.stop()
+@st.cache_data
+def load_data():
+    df = pd.read_csv("diabetest.csv")
+    cols_to_replace = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
+    df[cols_to_replace] = df[cols_to_replace].replace(0, np.nan)
+    imputer = SimpleImputer(strategy='median')
+    df[cols_to_replace] = imputer.fit_transform(df[cols_to_replace])
+    return df
+
+df = load_data()
 
 # جایگزینی مقادیر صفر با میانه
 cols_to_replace = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
