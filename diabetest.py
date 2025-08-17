@@ -395,4 +395,11 @@ for name, model in models.items():
     }
     comparison_results.append(metrics)
 
+
 pd.DataFrame(comparison_results).sort_values('Accuracy (Clean Data)', ascending=False)
+
+import joblib
+# ذخیره مدل Random Forest
+joblib.dump(models["Random Forest"], "random_forest_model.pkl")
+# ذخیره اسکیلر
+joblib.dump(scaler, "scaler.pkl")
