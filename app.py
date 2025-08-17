@@ -65,6 +65,18 @@ def load_data():
 
 df = load_data()
 
+from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import NearestNeighbors
+from scipy.stats import zscore
+
+# پیش‌پردازش و اضافه کردن ناهنجاری‌ها (مشابه diabetest.py)
+features = ['BMI', 'Glucose', 'Pregnancies', 'BloodPressure', 'SkinThickness', 'Insulin', 'DiabetesPedigreeFunction', 'Age', 'Outcome']
+X_raw = df[features]
+scaler = joblib.load("scaler.pkl")  # اسکیلر رو اینجا لود نکن، بعداً استفاده می‌کنیم
+X_scaled = scaler.fit_transform(X_raw.drop('Outcome', axis=1))  # فیت و transform جدید
+iso_model = IsolationForest(contamination=0.05, random_state=42)
+df['Anomaly_ISO'] = (iso_model.fit_predict(X_scaled) == -1).astype(int)
+# سایر ناهنجاری‌ها (KNN, Z-Score, IQR) رو هم می‌تونی اضافه کنی، ولی حداقل Anomaly_ISO کافیه
 # جایگزینی مقادیر صفر با میانه
 cols_to_replace = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
 df[cols_to_replace] = df[cols_to_replace].replace(0, np.nan)
