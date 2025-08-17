@@ -25,7 +25,7 @@ plt.show()
 
 import seaborn as sns
 
-features_to_plot = ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure']
+features_to_plot = ['Glucose', 'BMI']
 plt.figure(figsize=(12, 12))
 sns.boxplot(data=df[features_to_plot])
 plt.title("Boxplot of Selected Features", fontsize=14)
@@ -403,3 +403,4 @@ import joblib
 joblib.dump(models["Random Forest"], "random_forest_model.pkl")
 # ذخیره اسکیلر
 joblib.dump(scaler, "scaler.pkl")
+
