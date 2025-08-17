@@ -133,7 +133,7 @@ st.markdown("""
 
 try:
     model_rf = joblib.load("random_forest_model.pkl")
-    scaler = StandardScaler()  # بازسازی اسکیلر
+    scaler = StandardScaler()  # حالا باید کار کنه چون ایمپورت شده
     X = df.drop('Outcome', axis=1)
     y = df['Outcome']
     X_scaled = scaler.fit_transform(X)  # فیت با دیتاست فعلی
