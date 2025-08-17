@@ -7,6 +7,8 @@ import joblib
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler 
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score 
 
 # تنظیمات صفحه
 st.set_page_config(page_title="تشخیص دیابت", layout="wide")
