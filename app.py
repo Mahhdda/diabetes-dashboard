@@ -56,7 +56,7 @@ st.markdown("""
 # لود دیتاست
 @st.cache_data
 def load_data():
-    df = pd.read_csv("diabetest.csv")
+    df = pd.read_csv("diabetes.csv")
     cols_to_replace = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
     df[cols_to_replace] = df[cols_to_replace].replace(0, np.nan)
     imputer = SimpleImputer(strategy='median')
