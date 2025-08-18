@@ -54,7 +54,7 @@ def load_data():
     except FileNotFoundError:
         st.warning("دیتاست پیدا نشد! در حال لود از URL عمومی...")
         try:
-            url = "https://raw.githubusercontent.com/Mahhdda/diabetes-dashboard/main/diabetest.csv"
+            url = "https://raw.githubusercontent.com/Mahhdda/diabetes-dashboard/main/diabetes.csv"
             df = pd.read_csv(url)
         except Exception as e:
             st.error(f"لود دیتاست ناموفق بود! خطا: {e}")
@@ -221,4 +221,3 @@ try:
     joblib.dump(scaler, "scaler.pkl")
 except Exception as e:
     st.warning(f"ذخیره مدل ناموفق بود: {e}")
-```
