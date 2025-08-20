@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
+with open("style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
 # لود مدل و اسکیلر (فرض کنید فایل‌ها در روت پروژه هستند)
 try:
     model = joblib.load("random_forest_model.pkl")
