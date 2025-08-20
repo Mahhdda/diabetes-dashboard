@@ -135,32 +135,38 @@ elif page == "پیش‌بینی دیابت":
     st.header("پیش‌بینی دیابت")
     st.write("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.")
     
-    # تعریف ورودی‌ها با ترتیب ثابت
+    # تعریف ویژگی‌ها با ترتیب ثابت 
+    features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+    
+    # گرفتن ورودی‌ها از کاربر
     inputs = {}
-    features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']  # ترتیب ثابت
     for feature in features:
         if feature in ['Pregnancies', 'Age']:
-            inputs[feature] = st.number_input(feature, min_value=0, step=1)
+            inputs[feature] = st.number_input(f"{feature} (عدد صحیح)", min_value=0, step=1)
         else:
-            inputs[feature] = st.number_input(feature, min_value=0.0, step=0.1)
+            inputs[feature] = st.number_input(f"{feature} (عدد اعشاری)", min_value=0.0, step=0.1)
     
     if st.button("پیش‌بینی"):
-        # ساخت دیتافریم با ترتیب ثابت
+        # ساخت دیتافریم با ترتیب ثابت و چک کردن وجود همه ستون‌ها
         input_df = pd.DataFrame([inputs], columns=features)
         
-        # اعتبارسنجی داده‌ها (چک کردن مقادیر NaN یا نامعتبر)
+        # اعتبارسنجی داده‌ها
         if input_df.isnull().any().any():
             st.error("لطفاً همه فیلدها را پر کنید.")
         else:
-            # اسکیل کردن داده‌ها
-            input_scaled = scaler.transform(input_df)
-            prediction = model.predict(input_scaled)[0]
-            prob = model.predict_proba(input_scaled)[0][1] * 100
-            
-            if prediction == 1:
-                st.error(f"احتمال دیابت: {prob:.2f}% (دیابتی)")
-            else:
-                st.success(f"احتمال دیابت: {prob:.2f}% (غیر دیابتی)")
+            try:
+                # اسکیل کردن داده‌ها
+                input_scaled = scaler.transform(input_df)
+                prediction = model.predict(input_scaled)[0]
+                prob = model.predict_proba(input_scaled)[0][1] * 100
+                
+                if prediction == 1:
+                    st.error(f"احتمال دیابت: {prob:.2f}% (دیابتی)")
+                else:
+                    st.success(f"احتمال دیابت: {prob:.2f}% (غیر دیابتی)")
+            except ValueError as e:
+                st.error("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند. لطفاً ترتیب یا مقادیر را بررسی کنید.")
+                st.write("جزئیات خطا برای دیباگ:", str(e))
 
 # بخش 6: پیشنهاد برنامه غذایی و ورزشی
 elif page == "پیشنهاد برنامه غذایی و ورزشی":
