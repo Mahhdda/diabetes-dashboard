@@ -135,8 +135,9 @@ elif page == "پیش‌بینی دیابت":
     st.header("پیش‌بینی دیابت")
     st.write("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.")
     
-    # ورودی‌های کاربر
+    # تعریف ورودی‌ها با ترتیب ثابت
     inputs = {}
+    features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']  # ترتیب ثابت
     for feature in features:
         if feature in ['Pregnancies', 'Age']:
             inputs[feature] = st.number_input(feature, min_value=0, step=1)
@@ -144,15 +145,22 @@ elif page == "پیش‌بینی دیابت":
             inputs[feature] = st.number_input(feature, min_value=0.0, step=0.1)
     
     if st.button("پیش‌بینی"):
-        input_df = pd.DataFrame([inputs])
-        input_scaled = scaler.transform(input_df)
-        prediction = model.predict(input_scaled)[0]
-        prob = model.predict_proba(input_scaled)[0][1] * 100
+        # ساخت دیتافریم با ترتیب ثابت
+        input_df = pd.DataFrame([inputs], columns=features)
         
-        if prediction == 1:
-            st.error(f"احتمال دیابت: {prob:.2f}% (دیابتی)")
+        # اعتبارسنجی داده‌ها (چک کردن مقادیر NaN یا نامعتبر)
+        if input_df.isnull().any().any():
+            st.error("لطفاً همه فیلدها را پر کنید.")
         else:
-            st.success(f"احتمال دیابت: {prob:.2f}% (غیر دیابتی)")
+            # اسکیل کردن داده‌ها
+            input_scaled = scaler.transform(input_df)
+            prediction = model.predict(input_scaled)[0]
+            prob = model.predict_proba(input_scaled)[0][1] * 100
+            
+            if prediction == 1:
+                st.error(f"احتمال دیابت: {prob:.2f}% (دیابتی)")
+            else:
+                st.success(f"احتمال دیابت: {prob:.2f}% (غیر دیابتی)")
 
 # بخش 6: پیشنهاد برنامه غذایی و ورزشی
 elif page == "پیشنهاد برنامه غذایی و ورزشی":
