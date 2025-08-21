@@ -9,13 +9,47 @@ from sklearn.metrics import classification_report, confusion_matrix
 with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# لود مدل و اسکیلر (فرض کنید فایل‌ها در روت پروژه هستند)
+# لود مدل اصلی
 try:
-    model = joblib.load("random_forest_model.pkl")
-    scaler = joblib.load("scaler.pkl")
+    best_model = joblib.load("best_model_gradient_boosting.pkl")
+    scaler_clean = joblib.load("scaler_clean.pkl")
+    voting_model = joblib.load("voting_model_clean.pkl")
 except FileNotFoundError:
-    st.error("فایل‌های مدل یا اسکیلر یافت نشد. لطفاً آن‌ها را در روت پروژه آپلود کنید.")
+    st.error("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.")
     st.stop()
+
+# بخش 5: پیش‌بینی دیابت
+elif page == "پیش‌بینی دیابت":
+    st.header("پیش‌بینی دیابت")
+    st.write("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.")
+    
+    features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+    inputs = {}
+    for feature in features:
+        if feature in ['Pregnancies', 'Age']:
+            inputs[feature] = st.number_input(f"{feature} (عدد صحیح)", min_value=0, step=1)
+        else:
+            inputs[feature] = st.number_input(f"{feature} (عدد اعشاری)", min_value=0.0, step=0.1)
+    
+    model_choice = st.selectbox("انتخاب مدل", ["Gradient Boosting (بهترین تک مدل)", "Voting (سه مدل برتر)"])
+    
+    if st.button("پیش‌بینی"):
+        input_df = pd.DataFrame([inputs], columns=features)
+        if input_df.isnull().any().any():
+            st.error("لطفاً همه فیلدها را پر کنید.")
+        else:
+            input_scaled = scaler_clean.transform(input_df)
+            if model_choice == "Voting (سه مدل برتر)" and voting_model:
+                prediction = voting_model.predict(input_scaled)[0]
+                prob = voting_model.predict_proba(input_scaled)[0][1] * 100
+            else:
+                prediction = best_model.predict(input_scaled)[0]
+                prob = best_model.predict_proba(input_scaled)[0][1] * 100
+            
+            if prediction == 1:
+                st.error(f"احتمال دیابت: {prob:.2f}% (دیابتی)")
+            else:
+                st.success(f"احتمال دیابت: {prob:.2f}% (غیر دیابتی)")
 
 # ویژگی‌های دیتاست (بر اساس Pima)
 features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
@@ -43,7 +77,7 @@ if page == "مروری بر پروژه":
 # بخش 2: نمایش تحلیل‌های اولیه داده‌ها
 elif page == "تحلیل‌های اولیه داده‌ها":
     st.header("تحلیل‌های اولیه داده‌ها")
-    # لود دیتاست (فرض کنید diabetest.csv در روت است)
+    # لود دیتاست 
     try:
         df = pd.read_csv("diabetest.csv")
     except FileNotFoundError:
