@@ -82,14 +82,6 @@ elif page == "تحلیل‌های تکمیلی":
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
     st.pyplot(fig)
-
-    elif page == "تحلیل‌های تکمیلی":
-    st.header("تحلیل‌های تکمیلی")
-    try:
-        df = pd.read_csv("diabetest.csv")
-    except FileNotFoundError:
-        st.error("فایل دیتاست یافت نشد.")
-        st.stop()
     
     # گزارش حذف ناهنجاری با Isolation Forest
     st.subheader("گزارش حذف ناهنجاری‌ها با Isolation Forest")
