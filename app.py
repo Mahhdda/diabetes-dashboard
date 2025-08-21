@@ -82,6 +82,23 @@ elif page == "تحلیل‌های تکمیلی":
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
     st.pyplot(fig)
+
+    elif page == "تحلیل‌های تکمیلی":
+    st.header("تحلیل‌های تکمیلی")
+    try:
+        df = pd.read_csv("diabetest.csv")
+    except FileNotFoundError:
+        st.error("فایل دیتاست یافت نشد.")
+        st.stop()
+    
+    # گزارش حذف ناهنجاری با Isolation Forest
+    st.subheader("گزارش حذف ناهنجاری‌ها با Isolation Forest")
+    from sklearn.ensemble import IsolationForest
+    iso = IsolationForest(contamination=0.05, random_state=42)
+    outliers = iso.fit_predict(df.drop('Outcome', axis=1))
+    num_removed = len(df) - sum(outliers == 1)
+    st.write(f"تعداد داده‌های حذف شده: {num_removed}")
+    st.write("این روش 5% از داده‌ها رو به عنوان ناهنجاری در نظر می‌گیره و حذف می‌کنه.")
     
     st.subheader("رگرسیون خطی: BMI vs Glucose")
     from sklearn.linear_model import LinearRegression
