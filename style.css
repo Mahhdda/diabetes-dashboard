@@ -1,6 +1,59 @@
+/* تعریف فونت‌های مختلف وزیر */
+@font-face {
+    font-family: 'Vazir';
+    src: url('./vazir/Vazir-Thin.eot');
+    src: url('./vazir/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
+         url('./vazir/Vazir-Thin.woff2') format('woff2'),
+         url('./vazir/Vazir-Thin.woff') format('woff'),
+         url('./vazir/Vazir-Thin.ttf') format('truetype');
+    font-weight: 100; /* Thin */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Vazir';
+    src: url('./vazir/Vazir-Light.eot');
+    src: url('./vazir/Vazir-Light.eot?#iefix') format('embedded-opentype'),
+         url('./vazir/Vazir-Light.woff2') format('woff2'),
+         url('./vazir/Vazir-Light.woff') format('woff'),
+         url('./vazir/Vazir-Light.ttf') format('truetype');
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Vazir';
+    src: url('./vazir/Vazir-Medium.eot');
+    src: url('./vazir/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
+         url('./vazir/Vazir-Medium.woff2') format('woff2'),
+         url('./vazir/Vazir-Medium.woff') format('woff'),
+         url('./vazir/Vazir-Medium.ttf') format('truetype');
+    font-weight: 500; /* Medium */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Vazir';
+    src: url('./vazir/Vazir-Bold.eot');
+    src: url('./vazir/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
+         url('./vazir/Vazir-Bold.woff2') format('woff2'),
+         url('./vazir/Vazir-Bold.woff') format('woff'),
+         url('./vazir/Vazir-Bold.ttf') format('truetype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+/* تنظیمات کلی برای راست‌چین کردن و استفاده از فونت */
 body {
-    background-color: #f0f2f6;
-    font-family: 'Tahoma', sans-serif;
+    font-family: 'Vazir', sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
+    font-family: 'Vazir', sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
 }
 
 .stButton > button {
@@ -41,3 +94,4 @@ h1, h2, h3 {
 .stMarkdown strong {
     color: #FF0000; 
 }
+
