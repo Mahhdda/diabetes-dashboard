@@ -43,11 +43,11 @@
     font-style: normal;
 }
 
-/* تنظیمات کلی برای راست‌چین کردن و استفاده از فونت */
 body {
     font-family: 'Vazir', sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
+    background-color: #ffebcd !important; /* رنگ پس‌زمینه برای دیباگ */
 }
 
 /* استایل پایه برای تست */
@@ -111,6 +111,7 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     direction: rtl !important;
     text-align: right !important;
 }
+
 
 
 
