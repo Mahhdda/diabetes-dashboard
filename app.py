@@ -10,8 +10,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;500;700&display=swap');
-
     /* تعریف فونت‌های مختلف وزیر */
 @font-face{
     font-family: 'Vazir';
