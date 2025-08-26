@@ -1,5 +1,5 @@
 /* تعریف فونت‌های مختلف وزیر */
-@font-face {
+@font-face{
     font-family: 'Vazir';
     src: url('/vazir-font-v16.1.0/Vazir-Thin.eot');
     src: url('/vazir-font-v16.1.0/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
@@ -10,7 +10,7 @@
     font-style: normal;
 }
 
-@font-face {
+@font-face{
     font-family: 'Vazir';
     src: url('/vazir-font-v16.1.0/Vazir-Light.eot');
     src: url('/vazir-font-v16.1.0/Vazir-Light.eot?#iefix') format('embedded-opentype'),
@@ -21,7 +21,7 @@
     font-style: normal;
 }
 
-@font-face {
+@font-face{
     font-family: 'Vazir';
     src: url('/vazir-font-v16.1.0/Vazir-Medium.eot');
     src: url('/vazir-font-v16.1.0/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
@@ -43,29 +43,20 @@
     font-style: normal;
 }
 
-body {
+body{
     font-family: 'Vazir', sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
-    background-color: red !important; /* رنگ پس‌زمینه برای دیباگ */
 }
 
-/* استایل پایه برای تست */
-.stApp {
-    font-family: 'Vazir', sans-serif !important;
-    direction: rtl !important;
-    text-align: right !important;
-    background-color: #ffebcd !important; /* رنگ پس‌زمینه برای دیباگ */
-}
-
-div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
+div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea{
     font-family: 'Vazir', sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
     color: #333;
 }
 
-.stButton > button {
+.stButton > button{
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -81,11 +72,11 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     text-align: center !important;
 }
 
-.stButton > button:hover {
+.stButton > button:hover{
     background-color: #45a049;
 }
 
-.sidebar .sidebar-content {
+.sidebar .sidebar-content{
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
@@ -94,23 +85,24 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     text-align: right !important;
 }
 
-.stMarkdown p {
+.stMarkdown p{
     font-size: 16px;
     color: #333;
     direction: rtl !important;
     text-align: right !important;
 }
 
-.stNumberInput > div > input {
+.stNumberInput > div > input{
     direction: rtl !important;
     text-align: right !important;
 }
 
-.stMarkdown strong {
+.stMarkdown strong{
     color: #FF0000; 
     direction: rtl !important;
     text-align: right !important;
 }
+
 
 
 
