@@ -6,17 +6,56 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
-# لود CSS
-# لود CSS با بررسی خطا
-try:
-    with open("style.css") as f:
-        css = f.read()
-        st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
-        print("CSS لود شد با موفقیت.")
-except FileNotFoundError:
-    st.error("فایل style.css یافت نشد. لطفاً مطمئن شوید که توی روت مخزن هست.")
-except Exception as e:
-    st.error(f"خطا در لود CSS: {str(e)}")
+# تعریف CSS مستقیم توی کد
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;500;700&display=swap');
+
+    .stApp {
+        font-family: 'Vazirmatn', sans-serif !important;
+        direction: rtl !important;
+        text-align: right !important;
+        background-color: #ffebcd !important; /* برای تست بصری */
+    }
+
+    h1 {
+        color: red !important; /* تست رنگ عنوان */
+        font-weight: 700 !important; /* Bold */
+    }
+
+    .stButton > button {
+        font-family: 'Vazirmatn', sans-serif !important;
+        direction: rtl !important;
+        text-align: center !important;
+    }
+
+    .stNumberInput > div > input {
+        font-family: 'Vazirmatn', sans-serif !important;
+        direction: rtl !important;
+        text-align: right !important;
+    }
+
+    .stSelectbox > div > div {
+        font-family: 'Vazirmatn', sans-serif !important;
+        direction: rtl !important;
+        text-align: right !important;
+    }
+
+    .stMarkdown {
+        font-family: 'Vazirmatn', sans-serif !important;
+        direction: rtl !important;
+        text-align: right !important;
+    }
+
+    .sidebar .sidebar-content {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # لود مدل‌ها
 try:
