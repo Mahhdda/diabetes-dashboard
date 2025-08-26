@@ -54,6 +54,7 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     font-family: 'Vazir', sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
+    color: #333;
 }
 
 .stButton > button {
@@ -68,14 +69,12 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 4px;
+    direction: rtl !important;
+    text-align: center !important;
 }
 
 .stButton > button:hover {
     background-color: #45a049;
-}
-
-h1, h2, h3 {
-    color: #333;
 }
 
 .sidebar .sidebar-content {
@@ -83,16 +82,27 @@ h1, h2, h3 {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-
+    direction: rtl !important;
+    text-align: right !important;
 }
 
 .stMarkdown p {
     font-size: 16px;
     color: #333;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.stNumberInput > div > input {
+    direction: rtl !important;
+    text-align: right !important;
 }
 
 .stMarkdown strong {
     color: #FF0000; 
+    direction: rtl !important;
+    text-align: right !important;
 }
+
 
 
