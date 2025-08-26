@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
-st.markdown("<style>.stApp {background-color: blue !important;}</style>", unsafe_allow_html=True)
-st.write("تست")
-
 # تعریف CSS مستقیم توی کد
 st.markdown(
     """
