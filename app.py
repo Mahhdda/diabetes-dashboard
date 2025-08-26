@@ -12,46 +12,110 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;500;700&display=swap');
 
-    .stApp {
-        font-family: 'Vazirmatn', sans-serif !important;
-        direction: rtl !important;
-        text-align: right !important;
-        background-color: #ffebcd !important; /* برای تست بصری */
-    }
+    /* تعریف فونت‌های مختلف وزیر */
+@font-face{
+    font-family: 'Vazir';
+    src: url('/vazir-font-v16.1.0/Vazir-Thin.eot');
+    src: url('/vazir-font-v16.1.0/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
+         url('/vazir-font-v16.1.0/Vazir-Thin.woff2') format('woff2'),
+         url('/vazir-font-v16.1.0/Vazir-Thin.woff') format('woff'),
+         url('/vazir-font-v16.1.0/Vazir-Thin.ttf') format('truetype');
+    font-weight: 100; /* Thin */
+    font-style: normal;
+}
 
-    h1 {
-        color: red !important; /* تست رنگ عنوان */
-        font-weight: 700 !important; /* Bold */
-    }
+@font-face{
+    font-family: 'Vazir';
+    src: url('/vazir-font-v16.1.0/Vazir-Light.eot');
+    src: url('/vazir-font-v16.1.0/Vazir-Light.eot?#iefix') format('embedded-opentype'),
+         url('/vazir-font-v16.1.0/Vazir-Light.woff2') format('woff2'),
+         url('/vazir-font-v16.1.0/Vazir-Light.woff') format('woff'),
+         url('/vazir-font-v16.1.0/Vazir-Light.ttf') format('truetype');
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
 
-    .stButton > button {
-        font-family: 'Vazirmatn', sans-serif !important;
-        direction: rtl !important;
-        text-align: center !important;
-    }
+@font-face{
+    font-family: 'Vazir';
+    src: url('/vazir-font-v16.1.0/Vazir-Medium.eot');
+    src: url('/vazir-font-v16.1.0/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
+         url('/vazir-font-v16.1.0/Vazir-Medium.woff2') format('woff2'),
+         url('/vazir-font-v16.1.0/Vazir-Medium.woff') format('woff'),
+         url('/vazir-font-v16.1.0/Vazir-Medium.ttf') format('truetype');
+    font-weight: 500; /* Medium */
+    font-style: normal;
+}
 
-    .stNumberInput > div > input {
-        font-family: 'Vazirmatn', sans-serif !important;
-        direction: rtl !important;
-        text-align: right !important;
-    }
+@font-face {
+    font-family: 'Vazir';
+    src: url('/vazir-font-v16.1.0/Vazir-Bold.eot');
+    src: url('/vazir-font-v16.1.0/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
+         url('/vazir-font-v16.1.0/Vazir-Bold.woff2') format('woff2'),
+         url('/vazir-font-v16.1.0/Vazir-Bold.woff') format('woff'),
+         url('/vazir-font-v16.1.0/Vazir-Bold.ttf') format('truetype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
 
-    .stSelectbox > div > div {
-        font-family: 'Vazirmatn', sans-serif !important;
-        direction: rtl !important;
-        text-align: right !important;
-    }
+body{
+    font-family: 'Vazir', sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+}
 
-    .stMarkdown {
-        font-family: 'Vazirmatn', sans-serif !important;
-        direction: rtl !important;
-        text-align: right !important;
-    }
+div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea{
+    font-family: 'Vazir', sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+    color: #333;
+}
 
-    .sidebar .sidebar-content {
-        direction: rtl !important;
-        text-align: right !important;
-    }
+.stButton > button{
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    direction: rtl !important;
+    text-align: center !important;
+}
+
+.stButton > button:hover{
+    background-color: #45a049;
+}
+
+.sidebar .sidebar-content{
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.stMarkdown p{
+    font-size: 16px;
+    color: #333;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.stNumberInput > div > input{
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.stMarkdown strong{
+    color: #FF0000; 
+    direction: rtl !important;
+    text-align: right !important;
+}
     </style>
     """,
     unsafe_allow_html=True
