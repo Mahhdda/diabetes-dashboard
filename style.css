@@ -54,7 +54,7 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     font-family: 'Vazir', sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
-    color: #333;
+    color: #ffff;
 }
 
 .stButton > button {
@@ -103,6 +103,7 @@ div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
     direction: rtl !important;
     text-align: right !important;
 }
+
 
 
 
