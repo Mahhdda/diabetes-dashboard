@@ -7,8 +7,16 @@ import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 
 # لود CSS
-with open("style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# لود CSS با بررسی خطا
+try:
+    with open("style.css") as f:
+        css = f.read()
+        st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+        print("CSS لود شد با موفقیت.")
+except FileNotFoundError:
+    st.error("فایل style.css یافت نشد. لطفاً مطمئن شوید که توی روت مخزن هست.")
+except Exception as e:
+    st.error(f"خطا در لود CSS: {str(e)}")
 
 # لود مدل‌ها
 try:
