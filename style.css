@@ -1,44 +1,44 @@
 /* تعریف فونت‌های مختلف وزیر */
 @font-face {
     font-family: 'Vazir';
-    src: url('./vazir/Vazir-Thin.eot');
-    src: url('./vazir/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
-         url('./vazir/Vazir-Thin.woff2') format('woff2'),
-         url('./vazir/Vazir-Thin.woff') format('woff'),
-         url('./vazir/Vazir-Thin.ttf') format('truetype');
+    src: url('./vazir-font-v16.1.0/Vazir-Thin.eot');
+    src: url('./vazir-font-v16.1.0/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
+         url('./vazir-font-v16.1.0/Vazir-Thin.woff2') format('woff2'),
+         url('./vazir-font-v16.1.0/Vazir-Thin.woff') format('woff'),
+         url('./vazir-font-v16.1.0/Vazir-Thin.ttf') format('truetype');
     font-weight: 100; /* Thin */
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Vazir';
-    src: url('./vazir/Vazir-Light.eot');
-    src: url('./vazir/Vazir-Light.eot?#iefix') format('embedded-opentype'),
-         url('./vazir/Vazir-Light.woff2') format('woff2'),
-         url('./vazir/Vazir-Light.woff') format('woff'),
-         url('./vazir/Vazir-Light.ttf') format('truetype');
+    src: url('./vazir-font-v16.1.0/Vazir-Light.eot');
+    src: url('./vazir-font-v16.1.0/Vazir-Light.eot?#iefix') format('embedded-opentype'),
+         url('./vazir-font-v16.1.0/Vazir-Light.woff2') format('woff2'),
+         url('./vazir-font-v16.1.0/Vazir-Light.woff') format('woff'),
+         url('./vazir-font-v16.1.0/Vazir-Light.ttf') format('truetype');
     font-weight: 300; /* Light */
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Vazir';
-    src: url('./vazir/Vazir-Medium.eot');
-    src: url('./vazir/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
-         url('./vazir/Vazir-Medium.woff2') format('woff2'),
-         url('./vazir/Vazir-Medium.woff') format('woff'),
-         url('./vazir/Vazir-Medium.ttf') format('truetype');
+    src: url('./vazir-font-v16.1.0/Vazir-Medium.eot');
+    src: url('./vazir-font-v16.1.0/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
+         url('./vazir-font-v16.1.0/Vazir-Medium.woff2') format('woff2'),
+         url('./vazir-font-v16.1.0/Vazir-Medium.woff') format('woff'),
+         url('./vazir-font-v16.1.0/Vazir-Medium.ttf') format('truetype');
     font-weight: 500; /* Medium */
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Vazir';
-    src: url('./vazir/Vazir-Bold.eot');
-    src: url('./vazir/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
-         url('./vazir/Vazir-Bold.woff2') format('woff2'),
-         url('./vazir/Vazir-Bold.woff') format('woff'),
-         url('./vazir/Vazir-Bold.ttf') format('truetype');
+    src: url('./vazir-font-v16.1.0/Vazir-Bold.eot');
+    src: url('./vazir-font-v16.1.0/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
+         url('./vazir-font-v16.1.0/Vazir-Bold.woff2') format('woff2'),
+         url('./vazir-font-v16.1.0/Vazir-Bold.woff') format('woff'),
+         url('./vazir-font-v16.1.0/Vazir-Bold.ttf') format('truetype');
     font-weight: 700; /* Bold */
     font-style: normal;
 }
@@ -94,4 +94,5 @@ h1, h2, h3 {
 .stMarkdown strong {
     color: #FF0000; 
 }
+
 
