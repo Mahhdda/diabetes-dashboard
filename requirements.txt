@@ -1,7 +1,5 @@
-streamlit
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-joblib
+dash==2.17.1
+dash-bootstrap-components==1.6.0
+pandas==2.2.2
+scikit-learn==1.5.1
+joblib==1.4.2
