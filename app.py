@@ -20,7 +20,7 @@ except FileNotFoundError:
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=['/assets/style.css'])  # مسیر style.css رو تنظیم کن
+app = Dash(__name__, external_stylesheets=['style.css'])  # مسیر style.css رو تنظیم کن
 
 # لود دیتاست (برای تحلیل‌ها)
 try:
