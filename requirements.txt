@@ -3,3 +3,6 @@ dash-bootstrap-components==1.6.0
 pandas==2.2.2
 scikit-learn==1.5.1
 joblib==1.4.2
+pip>=24.0
+setuptools>=70.0.0
+wheel>=0.43.0
