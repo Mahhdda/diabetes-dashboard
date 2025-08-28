@@ -1,11 +1,10 @@
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
+import dash_table
 import pandas as pd
 import joblib
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
+import plotly.express as px
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVC
@@ -16,18 +15,24 @@ try:
     scaler_clean = joblib.load("scaler_clean.pkl")
     voting_model = joblib.load("voting_model_clean.pkl")
 except FileNotFoundError:
-    print("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.")
+    app = Dash(__name__)
+    app.layout = html.P("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
+    if __name__ == '__main__':
+        app.run_server(debug=True)
     exit()
 
-# تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=['style.css'])  # مسیر style.css رو تنظیم کن
-
-# لود دیتاست (برای تحلیل‌ها)
+# لود دیتاست
 try:
     df = pd.read_csv("diabetest.csv")
 except FileNotFoundError:
-    print("فایل دیتاست یافت نشد. لطفاً diabetest.csv را آپلود کنید.")
+    app = Dash(__name__)
+    app.layout = html.P("فایل دیتاست یافت نشد. لطفاً diabetest.csv را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
+    if __name__ == '__main__':
+        app.run_server(debug=True)
     exit()
+
+# تنظیم Dash با استایل خارجی
+app = Dash(__name__, external_stylesheets=['style.css'])
 
 app.layout = html.Div([
     html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style={'color': 'red'}),
@@ -67,41 +72,26 @@ def update_page(value):
         """, style={'direction': 'rtl', 'text-align': 'right'})
 
     elif value == 'eda':
-        # هیستوگرام
-        fig_hist, ax_hist = plt.subplots(figsize=(10, 8))
-        df.hist(bins=20, ax=ax_hist)
-        plt.tight_layout()
-        # باکس پلات
-        fig_box, ax_box = plt.subplots(figsize=(10, 6))
-        features_to_plot = ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure']
-        sns.boxplot(data=df[features_to_plot], ax=ax_box)
-        plt.xticks(rotation=45)
-        # اسکتر پلات
-        fig_scatter, ax_scatter = plt.subplots(figsize=(8, 6))
-        sns.scatterplot(data=df, x='Glucose', y='BMI', hue='Outcome', palette='coolwarm', ax=ax_scatter)
-        return [
-            dcc.Graph(figure=fig_hist),
-            dcc.Graph(figure=fig_box),
-            dcc.Graph(figure=fig_scatter)
-        ]
+        figs = []
+        for col in df.columns:
+            fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
+            figs.append(dcc.Graph(figure=fig_hist))
+        fig_box = px.box(df, y=['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure'], title="باکس پلات ویژگی‌ها")
+        fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
+        return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
 
     elif value == 'advanced':
-        # کورلیشن ماتریکس
-        fig_corr, ax_corr = plt.subplots(figsize=(10, 8))
         corr = df.corr()
-        sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax_corr)
-        # حذف ناهنجاری‌ها
+        fig_corr = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu', title='کورلیشن ماتریکس')
         iso = IsolationForest(contamination=0.05, random_state=42)
         outliers = iso.fit_predict(df.drop('Outcome', axis=1))
         num_removed = len(df) - sum(outliers == 1)
-        # رگرسیون خطی
-        fig_reg, ax_reg = plt.subplots(figsize=(8, 5))
         X = df[['BMI']]
         y = df['Glucose']
         reg_model = LinearRegression().fit(X, y)
         y_pred = reg_model.predict(X)
-        ax_reg.scatter(X, y, alpha=0.6)
-        ax_reg.plot(X, y_pred, color='red')
+        fig_reg = px.scatter(df, x='BMI', y='Glucose', title='رگرسیون خطی: BMI vs Glucose')
+        fig_reg.add_scatter(x=X['BMI'], y=y_pred, mode='lines', name='خط رگرسیون', line=dict(color='red'))
         return [
             dcc.Graph(figure=fig_corr),
             html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right'}),
@@ -120,9 +110,8 @@ def update_page(value):
             'ROC-AUC': [0.87, 0.85, 0.84]
         }
         results_df = pd.DataFrame(results_data)
-        fig_cm, ax_cm = plt.subplots(figsize=(5, 5))
         cm = np.array([[92, 8], [12, 42]])
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax_cm)
+        fig_cm = px.imshow(cm, text_auto=True, color_continuous_scale='Blues', title='ماتریس سردرگمی')
         return [
             html.P("""
             مدل‌های آموزش‌دیده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
@@ -131,7 +120,10 @@ def update_page(value):
             """, style={'direction': 'rtl', 'text-align': 'right'}),
             dash_table.DataTable(
                 data=results_df.to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in results_df.columns]
+                columns=[{'name': i, 'id': i} for i in results_df.columns],
+                style_table={'direction': 'rtl', 'textAlign': 'right'},
+                style_cell={'textAlign': 'right', 'fontFamily': 'Vazir'},
+                style_header={'textAlign': 'right', 'fontFamily': 'Vazir'}
             ),
             dcc.Graph(figure=fig_cm)
         ]
@@ -140,7 +132,7 @@ def update_page(value):
         return html.Div([
             html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style={'direction': 'rtl', 'text-align': 'right'}),
             *[html.Div([
-                html.Label(f"{feature} (عدد {'سفید' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={'direction': 'rtl', 'text-align': 'right'}),
+                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={'direction': 'rtl', 'text-align': 'right'}),
                 dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style={'direction': 'rtl', 'text-align': 'right'})
             ]) for feature in ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']],
             dcc.Dropdown(
@@ -186,7 +178,7 @@ def predict_diabetes(n_clicks, pregnancies, glucose, blood_pressure, skin_thickn
             return html.P(f"احتمال دیابت: {prob:.2f}% {'(دیابتی)' if prediction == 1 else '(غیر دیابتی)'}", style={'color': '#FF0000' if prediction == 1 else '#008000', 'direction': 'rtl', 'text-align': 'right'})
         except ValueError as e:
             return html.P("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
-    return ""
+    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'})
 
 # کال‌بک برای پیشنهادات
 @app.callback(
@@ -198,4 +190,35 @@ def get_recommendations(n_clicks, glucose, bmi, age, insulin):
     if n_clicks > 0 and all(v is not None for v in [glucose, bmi, age, insulin]):
         diet = "برنامه غذایی متعادل: "
         if glucose > 140:
-            diet += "غ
+            diet += "غذاهای کم‌شکر، سبزیجات بیشتر، پروتئین بدون چربی. "
+        if bmi > 25:
+            diet += "رژیم کم‌کالری، اجتناب از فست‌فود. نمونه روزانه: صبحانه: تخم‌مرغ و سبزی، ناهار: سالاد مرغ، شام: ماهی و بروکلی."
+        else:
+            diet += "غذاهای سالم با تعادل کربوهیدرات، پروتئین و چربی."
+        
+        sleep = "خواب کافی: "
+        if age < 30:
+            sleep += "8-9 ساعت در شب."
+        elif age < 50:
+            sleep += "7-8 ساعت."
+        else:
+            sleep += "6-7 ساعت، با چرت کوتاه روزانه."
+        
+        exercise = "برنامه ورزشی: "
+        if bmi > 25 or insulin > 100:
+            exercise += "ورزش روزانه 45 دقیقه: ایروبیک، وزنه‌برداری سبک."
+        else:
+            exercise += "ورزش متوسط 30 دقیقه: یوگا یا شنا."
+        
+        walking = "پیاده‌روی: حداقل 5000 قدم روزانه، اگر BMI بالا باشد 10000 قدم."
+        
+        return [
+            html.P(diet, style={'direction': 'rtl', 'text-align': 'right'}),
+            html.P(sleep, style={'direction': 'rtl', 'text-align': 'right'}),
+            html.P(exercise, style={'direction': 'rtl', 'text-align': 'right'}),
+            html.P(walking, style={'direction': 'rtl', 'text-align': 'right'})
+        ]
+    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
