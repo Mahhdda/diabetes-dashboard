@@ -195,7 +195,6 @@ def get_recommendations(n_clicks, glucose, bmi, age, insulin):
             diet += "رژیم کم‌کالری، اجتناب از فست‌فود. نمونه روزانه: صبحانه: تخم‌مرغ و سبزی، ناهار: سالاد مرغ، شام: ماهی و بروکلی."
         else:
             diet += "غذاهای سالم با تعادل کربوهیدرات، پروتئین و چربی."
-        
         sleep = "خواب کافی: "
         if age < 30:
             sleep += "8-9 ساعت در شب."
@@ -203,13 +202,11 @@ def get_recommendations(n_clicks, glucose, bmi, age, insulin):
             sleep += "7-8 ساعت."
         else:
             sleep += "6-7 ساعت، با چرت کوتاه روزانه."
-        
         exercise = "برنامه ورزشی: "
         if bmi > 25 or insulin > 100:
             exercise += "ورزش روزانه 45 دقیقه: ایروبیک، وزنه‌برداری سبک."
         else:
             exercise += "ورزش متوسط 30 دقیقه: یوگا یا شنا."
-        
         walking = "پیاده‌روی: حداقل 5000 قدم روزانه، اگر BMI بالا باشد 10000 قدم."
         
         return [
