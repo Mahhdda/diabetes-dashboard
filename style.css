@@ -1,105 +1,135 @@
-/* تعریف فونت‌های مختلف وزیر */
-@font-face {
-    font-family: 'Vazir';
-    src: url('vazir-font-v16.1.0/Vazir-Thin.eot');
-    src: url('vazir-font-v16.1.0/Vazir-Thin.eot?#iefix') format('embedded-opentype'),
-         url('vazir-font-v16.1.0/Vazir-Thin.woff2') format('woff2'),
-         url('vazir-font-v16.1.0/Vazir-Thin.woff') format('woff'),
-         url('vazir-font-v16.1.0/Vazir-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Vazir';
-    src: url('vazir-font-v16.1.0/Vazir-Light.eot');
-    src: url('vazir-font-v16.1.0/Vazir-Light.eot?#iefix') format('embedded-opentype'),
-         url('vazir-font-v16.1.0/Vazir-Light.woff2') format('woff2'),
-         url('vazir-font-v16.1.0/Vazir-Light.woff') format('woff'),
-         url('vazir-font-v16.1.0/Vazir-Light.ttf') format('truetype');
-    font-weight: 300; /* Light */
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Vazir';
-    src: url('vazir-font-v16.1.0/Vazir-Medium.eot');
-    src: url('vazir-font-v16.1.0/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
-         url('vazir-font-v16.1.0/Vazir-Medium.woff2') format('woff2'),
-         url('vazir-font-v16.1.0/Vazir-Medium.woff') format('woff'),
-         url('vazir-font-v16.1.0/Vazir-Medium.ttf') format('truetype');
-    font-weight: 500; /* Medium */
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Vazir';
-    src: url('vazir-font-v16.1.0/Vazir-Bold.eot');
-    src: url('vazir-font-v16.1.0/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
-         url('vazir-font-v16.1.0/Vazir-Bold.woff2') format('woff2'),
-         url('vazir-font-v16.1.0/Vazir-Bold.woff') format('woff'),
-         url('vazir-font-v16.1.0/Vazir-Bold.ttf') format('truetype');
-    font-weight: 700; /* Bold */
-    font-style: normal;
-}
-
+/* تنظیمات عمومی */
 body {
-    font-family: 'Vazir', sans-serif !important;
-    direction: rtl !important;
-    text-align: right !important;
-}
-
-div, p, h1, h2, h3, h4, h5, h6, span, a, li, button, input, select, textarea {
-    font-family: 'Vazir', sans-serif !important;
-    direction: rtl !important;
-    text-align: right !important;
+    font-family: 'Vazir', sans-serif;
+    background-color: #f4f7fa;
     color: #333;
+    direction: rtl;
+    margin: 0;
+    padding: 0;
 }
 
-.stButton > button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    direction: rtl !important;
-    text-align: center !important;
+/* استایل کلی Div اصلی */
+div[data-dash-is-loading] {
+    direction: rtl;
+    text-align: right;
 }
 
-.stButton > button:hover {
-    background-color: #45a049;
-}
-
-.sidebar .sidebar-content {
+/* استایل هدر (H1) */
+h1 {
+    color: #1e3a8a; /* آبی تیره */
+    text-align: right;
+    padding: 15px 20px;
     background-color: #ffffff;
-    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* استایل دراپ‌داون */
+.dcc-dropdown {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    direction: rtl !important;
-    text-align: right !important;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-family: 'Vazir', sans-serif;
+    direction: rtl;
+    text-align: right;
 }
 
-.stMarkdown p {
-    font-size: 16px;
-    color: #333;
-    direction: rtl !important;
-    text-align: right !important;
+.dcc-dropdown .Select-menu-outer {
+    direction: rtl;
+    text-align: right;
 }
 
-.stNumberInput > div > input {
-    direction: rtl !important;
-    text-align: right !important;
+/* استایل ورودی‌ها (Input) */
+.dcc-input {
+    width: 100%;
+    max-width: 200px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-family: 'Vazir', sans-serif;
+    direction: rtl;
+    text-align: right;
 }
 
-.stMarkdown strong {
-    color: #FF0000; 
-    direction: rtl !important;
-    text-align: right !important;
+/* استایل دکمه‌ها */
+button {
+    background-color: #1e40af; /* آبی تیره */
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Vazir', sans-serif;
+    direction: rtl;
+    text-align: center;
 }
 
+button:hover {
+    background-color: #1e3a8a; /* کمی تیره‌تر در هاور */
+}
+
+/* استایل متن خروجی */
+#prediction-output, #recommend-output {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+    text-align: right;
+}
+
+/* استایل جدول داده‌ها */
+.dash-table {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    border-collapse: collapse;
+    font-family: 'Vazir', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+.dash-table th, .dash-table td {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.dash-table th {
+    background-color: #1e3a8a;
+    color: #ffffff;
+}
+
+.dash-table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+/* استایل گراف‌ها */
+.dcc-graph {
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* استایل متن قرمز (برای خطاها یا پیش‌بینی دیابتی) */
+.text-red {
+    color: #ff0000 !important;
+}
+
+/* استایل متن سبز (برای پیش‌بینی غیر دیابتی) */
+.text-green {
+    color: #008000 !important;
+}
+
+/* اطمینان از ترازبندی RTL برای همه المان‌ها */
+* {
+    direction: rtl;
+    text-align: right;
+}
