@@ -1,6 +1,7 @@
 from dash import Dash, html, dcc, Input, Output, State
 from dash import dash_table
 app = Dash(__name__)
+application = app.server
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
