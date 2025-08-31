@@ -1,6 +1,8 @@
 from dash import Dash, html, dcc, Input, Output, State
+from dash import dash_table
+app = Dash(__name__)
+from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
-import dash_table
 import pandas as pd
 import joblib
 import numpy as np
@@ -219,3 +221,8 @@ def get_recommendations(n_clicks, glucose, bmi, age, insulin):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+    
+# برای WSGI (مثل waitress)
+application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
+if __name__ == '__main__':
+    app.run_server(debug=True, host='127.0.0.1', port=8000)
