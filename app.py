@@ -12,6 +12,92 @@ from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVC
 
+# تعریف استایل‌های مشترک
+BASE_STYLE = {
+    'direction': 'rtl',
+    'textAlign': 'right',
+    'fontFamily': 'Vazir, sans-serif'  # اگه فونت Vazir داری، جایگزین کن
+}
+
+HEADER_STYLE = {
+    **BASE_STYLE,
+    'color': '#1e3a8a',  # آبی تیره
+    'padding': '15px 20px',
+    'backgroundColor': '#ffffff',
+    'borderBottom': '1px solid #e2e8f0',
+    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
+}
+
+DROPDOWN_STYLE = {
+    **BASE_STYLE,
+    'width': '100%',
+    'maxWidth': '400px',
+    'margin': '20px auto',
+    'padding': '10px',
+    'borderRadius': '8px',
+    'border': '1px solid #e2e8f0',
+    'backgroundColor': '#ffffff',
+    'boxShadow': '0 1px 3px rgba(0, 0, 0, 0.1)'
+}
+
+INPUT_STYLE = {
+    **BASE_STYLE,
+    'width': '100%',
+    'maxWidth': '200px',
+    'padding': '10px',
+    'margin': '10px 0',
+    'border': '1px solid #e2e8f0',
+    'borderRadius': '6px'
+}
+
+BUTTON_STYLE = {
+    **BASE_STYLE,
+    'backgroundColor': '#1e40af',
+    'color': '#ffffff',
+    'padding': '10px 20px',
+    'border': 'none',
+    'borderRadius': '6px',
+    'cursor': 'pointer',
+    'textAlign': 'center'
+}
+
+OUTPUT_STYLE = {
+    **BASE_STYLE,
+    'margin': '20px 0',
+    'padding': '15px',
+    'backgroundColor': '#ffffff',
+    'borderRadius': '6px',
+    'boxShadow': '0 1px 3px rgba(0, 0, 0, 0.1)'
+}
+
+TABLE_STYLE = {
+    **BASE_STYLE,
+    'width': '100%',
+    'maxWidth': '800px',
+    'margin': '20px auto',
+    'borderCollapse': 'collapse'
+}
+
+TABLE_HEADER_STYLE = {
+    **BASE_STYLE,
+    'backgroundColor': '#1e3a8a',
+    'color': '#ffffff',
+    'padding': '12px'
+}
+
+TABLE_ROW_STYLE = {
+    **BASE_STYLE,
+    'padding': '12px',
+    'border': '1px solid #e2e8f0'
+}
+
+GRAPH_STYLE = {
+    **BASE_STYLE,
+    'margin': '20px auto',
+    'borderRadius': '8px',
+    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
+}
+
 # لود مدل‌ها
 try:
     best_model = joblib.load("best_model_gradient_boosting.pkl")
@@ -38,7 +124,7 @@ except FileNotFoundError:
 app = Dash(__name__, external_stylesheets=['style.css'])
 
 app.layout = html.Div([
-    html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style={'color': 'red'}),
+    html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style=HEADER_STYLE),
     html.Div([
         dcc.Dropdown(
             id='page-dropdown',
@@ -51,11 +137,11 @@ app.layout = html.Div([
                 {'label': 'پیشنهاد برنامه غذایی و ورزشی', 'value': 'recommendations'}
             ],
             value='overview',
-            style={'direction': 'rtl', 'text-align': 'right'}
+            style=DROPDOWN_STYLE
         )
-    ], style={'margin': '20px'}),
-    html.Div(id='page-content', style={'direction': 'rtl', 'text-align': 'right'})
-], style={'direction': 'rtl', 'text-align': 'right', 'padding': '20px'})
+    ]),
+    html.Div(id='page-content', style=BASE_STYLE)
+], style=BASE_STYLE)
 
 # کال‌بک برای تغییر محتوا بر اساس انتخاب
 @app.callback(
@@ -120,43 +206,43 @@ def update_page(value):
             مدل‌های آموزش‌دیده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
             بهترین مدل: Gradient Boosting روی داده‌های پاک‌شده (بعد از حذف ناهنجاری‌ها) با دقت بالا.
             ارزیابی شامل Accuracy, Precision, Recall, F1-Score, ROC-AUC و Cross-Validation.
-            """, style={'direction': 'rtl', 'text-align': 'right'}),
+            """, style=BASE_STYLE),
             dash_table.DataTable(
                 data=results_df.to_dict('records'),
                 columns=[{'name': i, 'id': i} for i in results_df.columns],
-                style_table={'direction': 'rtl', 'textAlign': 'right'},
-                style_cell={'textAlign': 'right', 'fontFamily': 'Vazir'},
-                style_header={'textAlign': 'right', 'fontFamily': 'Vazir'}
+                style_table=TABLE_STYLE,
+                style_cell=TABLE_ROW_STYLE,
+                style_header=TABLE_HEADER_STYLE
             ),
-            dcc.Graph(figure=fig_cm)
+            dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
         ]
 
     elif value == 'predict':
         return html.Div([
-            html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style={'direction': 'rtl', 'text-align': 'right'}),
+            html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
             *[html.Div([
-                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={'direction': 'rtl', 'text-align': 'right'}),
-                dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style={'direction': 'rtl', 'text-align': 'right'})
+                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style=BASE_STYLE),
+                dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style=INPUT_STYLE)
             ]) for feature in ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']],
             dcc.Dropdown(
                 id='model-choice',
                 options=[{'label': 'Gradient Boosting (بهترین تک مدل)', 'value': 'gb'}, {'label': 'Voting (سه مدل برتر)', 'value': 'voting'}],
                 value='gb',
-                style={'direction': 'rtl', 'text-align': 'right'}
+                style=DROPDOWN_STYLE
             ),
-            html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style={'direction': 'rtl', 'text-align': 'center'}),
-            html.Div(id='prediction-output', style={'direction': 'rtl', 'text-align': 'right'})
+            html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style=BUTTON_STYLE),
+            html.Div(id='prediction-output', style=OUTPUT_STYLE)
         ])
 
     elif value == 'recommendations':
         return html.Div([
-            html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style={'direction': 'rtl', 'text-align': 'right'}),
+            html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style=BASE_STYLE),
             *[html.Div([
-                html.Label(feature, style={'direction': 'rtl', 'text-align': 'right'}),
-                dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature == 'Age' else 0.0, step=1 if feature == 'Age' else 0.1, style={'direction': 'rtl', 'text-align': 'right'})
+                html.Label(feature, style=BASE_STYLE),
+                dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature == 'Age' else 0.0, step=1 if feature == 'Age' else 0.1, style=INPUT_STYLE)
             ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin']],
-            html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style={'direction': 'rtl', 'text-align': 'center'}),
-            html.Div(id='recommend-output', style={'direction': 'rtl', 'text-align': 'right'})
+            html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style=BUTTON_STYLE),
+            html.Div(id='recommend-output', style=OUTPUT_STYLE)
         ])
 
 # کال‌بک برای پیش‌بینی
@@ -178,10 +264,11 @@ def predict_diabetes(n_clicks, pregnancies, glucose, blood_pressure, skin_thickn
             else:
                 prediction = best_model.predict(input_scaled)[0]
                 prob = best_model.predict_proba(input_scaled)[0][1] * 100
-            return html.P(f"احتمال دیابت: {prob:.2f}% {'(دیابتی)' if prediction == 1 else '(غیر دیابتی)'}", style={'color': '#FF0000' if prediction == 1 else '#008000', 'direction': 'rtl', 'text-align': 'right'})
+            return html.P(f"احتمال دیابت: {prob:.2f}% {'(دیابتی)' if prediction == 1 else '(غیر دیابتی)'}", 
+                          style={**OUTPUT_STYLE, 'color': '#FF0000' if prediction == 1 else '#008000'})
         except ValueError as e:
-            return html.P("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
-    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+            return html.P("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند.", style={**OUTPUT_STYLE, 'color': '#FF0000'})
+    return html.P("لطفاً مقادیر را وارد کنید.", style=OUTPUT_STYLE)
 
 # کال‌بک برای پیشنهادات
 @app.callback(
