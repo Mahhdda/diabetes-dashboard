@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Input, Output, State, ctx
+from dash import Dash, html, dcc, Input, Output, State
 from dash import dash_table
 app = Dash(__name__)
 application = app.server
@@ -27,8 +27,7 @@ HEADER_STYLE = {
     'padding': '15px 20px',
     'backgroundColor': '#ffffff',
     'borderBottom': '1px solid #e2e8f0',
-    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
-    'textAlign': 'center'  # وسط‌چین کردن تایتل
+    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
 }
 
 INPUT_STYLE = {
@@ -89,6 +88,17 @@ GRAPH_STYLE = {
     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
 }
 
+ALERT_STYLE = {
+    **BASE_STYLE,
+    'margin': '20px 0',
+    'padding': '15px',
+    'backgroundColor': '#ffe6e6',
+    'border': '2px solid #ff0000',
+    'borderRadius': '6px',
+    'color': '#ff0000',
+    'fontWeight': 'bold'
+}
+
 # لود مدل‌ها
 try:
     best_model = joblib.load("best_model_gradient_boosting.pkl")
@@ -112,13 +122,13 @@ except FileNotFoundError:
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # تعریف off-canvas برای منو
 offcanvas = html.Div(
     [
         dbc.Button(
-            children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
+            html.I(className="bi bi-list"),  # ایکون منو (Bootstrap Icons)
             id="open-offcanvas",
             n_clicks=0,
             style={'position': 'absolute', 'top': '15px', 'right': '15px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}
@@ -127,12 +137,12 @@ offcanvas = html.Div(
             [
                 dbc.ListGroup(
                     [
-                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer'})
+                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0),
+                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0),
+                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0),
+                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0),
+                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0)
                     ],
                     flush=True
                 )
@@ -173,11 +183,12 @@ def toggle_offcanvas(n1, is_open):
      Input('recommendations-item', 'n_clicks')]
 )
 def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
+    ctx = dash.callback_context
     if not ctx.triggered:
         return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right'})
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    if triggered_id == 'overview-item' and overview_clicks:
+    if triggered_id == 'overview-item':
         return html.P("""
         این پروژه داده‌کاوی بر روی دیتاست Pima Indians Diabetes تمرکز دارد که شامل 768 رکورد و 9 ویژگی است. 
         اهداف اصلی:
@@ -188,7 +199,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
         """, style={'direction': 'rtl', 'text-align': 'right'})
 
-    elif triggered_id == 'eda-item' and eda_clicks:
+    elif triggered_id == 'eda-item':
         figs = []
         for col in df.columns:
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
@@ -197,7 +208,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
         return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
 
-    elif triggered_id == 'advanced-item' and advanced_clicks:
+    elif triggered_id == 'advanced-item':
         corr = df.corr()
         fig_corr = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu', title='کورلیشن ماتریکس')
         iso = IsolationForest(contamination=0.05, random_state=42)
@@ -212,6 +223,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         return [
             dcc.Graph(figure=fig_corr),
             html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right'}),
+            dcc.Graph(figure=fig_reg),
             html.P("""
             تحلیل تکمیلی شامل:
             - شناسایی ناهنجاری‌ها با IsolationForest.
@@ -220,7 +232,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             """, style=BASE_STYLE)
         ]
 
-    elif triggered_id == 'models-item' and models_clicks:
+    elif triggered_id == 'models-item':
         results_df = pd.DataFrame({'Model': ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest', 'XGBoost', 'Gradient Boosting', 'LightGBM', 'MLP'],
                                  'Accuracy': [0.75, 0.72, 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
         fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
@@ -240,7 +252,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
         ]
 
-    elif triggered_id == 'predict-item' and predict_clicks:
+    elif triggered_id == 'predict-item':
         return html.Div([
             html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
             *[html.Div([
@@ -257,14 +269,16 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             html.Div(id='prediction-output', style=OUTPUT_STYLE)
         ])
 
-    elif triggered_id == 'recommendations-item' and recommendations_clicks:
+    elif triggered_id == 'recommendations-item':
         return html.Div([
-            html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style=BASE_STYLE),
+            html.Label("بر اساس ویژگی‌های کلیدی: Glucose, BMI, Age, Insulin, BloodPressure, Pregnancies", style=BASE_STYLE),
             *[html.Div([
                 html.Label(feature, style=BASE_STYLE),
-                dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature == 'Age' else 0.0, step=1 if feature == 'Age' else 0.1, style=INPUT_STYLE)
-            ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin']],
+                dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature in ['Age', 'Pregnancies'] else 0.0, step=1 if feature in ['Age', 'Pregnancies'] else 0.1, style=INPUT_STYLE)
+            ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure', 'Pregnancies']],
             html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style=BUTTON_STYLE),
+            html.Button('دانلود برنامه به صورت PDF', id='download-button', n_clicks=0, style={**BUTTON_STYLE, 'backgroundColor': '#008000', 'margin': '10px'}),
+            dcc.Download(id='download-pdf'),
             html.Div(id='recommend-output', style=OUTPUT_STYLE)
         ])
 
@@ -293,11 +307,52 @@ def predict_diabetes(n_clicks, pregnancies, glucose, blood_pressure, skin_thickn
             return html.P("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند.", style={**OUTPUT_STYLE, 'color': '#FF0000'})
     return html.P("لطفاً مقادیر را وارد کنید.", style=OUTPUT_STYLE)
 
-# کال‌بک برای پیشنهادات
+# تابع برای تولید محتوای PDF
+def generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies, diet, meal_plan, sleep, exercise, walking, alerts):
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; }}
+            h1 {{ color: #1e3a8a; text-align: center; }}
+            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            th, td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: right; }}
+            th {{ background-color: #1e3a8a; color: white; }}
+            .alert {{ color: red; font-weight: bold; border: 2px solid red; padding: 10px; margin: 10px 0; }}
+            p {{ margin: 10px 0; }}
+        </style>
+    </head>
+    <body>
+        <h1>برنامه غذایی و ورزشی شخصی‌سازی‌شده</h1>
+        <h2>ویژگی‌های ورودی</h2>
+        <p>گلوکز: {glucose} | BMI: {bmi} | سن: {age} | انسولین: {insulin} | فشار خون: {blood_pressure} | تعداد بارداری: {pregnancies}</p>
+        {'<div class="alert">' + '<br>'.join(alerts) + '</div>' if alerts else ''}
+        <h2>برنامه غذایی</h2>
+        <p>{diet}</p>
+        <table>
+            <tr><th>وعده</th><th>پیشنهاد</th><th>نکته</th></tr>
+            {''.join([f'<tr><td>{row["وعده"]}</td><td>{row["پیشنهاد"]}</td><td>{row["نکته"]}</td></tr>' for _, row in meal_plan.iterrows()])}
+        </table>
+        <h2>خواب</h2>
+        <p>{sleep}</p>
+        <h2>ورزش</h2>
+        <p>{exercise}</p>
+        <h2>پیاده‌روی</h2>
+        <p>{walking}</p>
+        <p style="color: red; font-weight: bold;">نکته: این پیشنهادات عمومی هستند. برای برنامه دقیق، با پزشک مشورت کنید.</p>
+    </body>
+    </html>
+    """
+
+# کال‌بک برای پیشنهادات و دانلود PDF
 @app.callback(
-    Output('recommend-output', 'children'),
-    Input('recommend-button', 'n_clicks'),
-    [Input(f'rec-input-{feature}', 'value') for feature in ['Glucose', 'BMI', 'Age', 'Insulin']]
+    [Output('recommend-output', 'children'),
+     Output('download-pdf', 'data')],
+    [Input('recommend-button', 'n_clicks'),
+     Input('download-button', 'n_clicks')],
+    [State(f'rec-input-{feature}', 'value') for feature in ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure', 'Pregnancies']]
 )
 def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, insulin, blood_pressure, pregnancies):
     ctx = dash.callback_context
@@ -424,9 +479,8 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-    
+
 # برای WSGI (مثل waitress)
-application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
+application = app.server
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8000)
-
