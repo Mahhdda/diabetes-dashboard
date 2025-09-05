@@ -10,6 +10,9 @@ import plotly.express as px
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVC
+import base64
+from io import BytesIO
+from xhtml2pdf import pisa  # برای تولید PDF
 
 # تعریف استایل‌های مشترک
 BASE_STYLE = {
@@ -426,3 +429,4 @@ if __name__ == '__main__':
 application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8000)
+
