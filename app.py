@@ -25,7 +25,8 @@ HEADER_STYLE = {
     'padding': '15px 20px',
     'backgroundColor': '#ffffff',
     'borderBottom': '1px solid #e2e8f0',
-    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
+    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
+    'textAlign': 'center'  # وسط‌چین کردن تایتل
 }
 
 INPUT_STYLE = {
@@ -115,7 +116,7 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 offcanvas = html.Div(
     [
         dbc.Button(
-            html.I(className="bi bi-list"),  # ایکون منو (Bootstrap Icons)
+            children=[html.I(className="fas fa-bars")],  # آیکون همبرگری با Font Awesome (در دسترس از طریق Bootstrap)
             id="open-offcanvas",
             n_clicks=0,
             style={'position': 'absolute', 'top': '15px', 'right': '15px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}
@@ -124,12 +125,12 @@ offcanvas = html.Div(
             [
                 dbc.ListGroup(
                     [
-                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0),
-                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0),
-                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0),
-                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0),
-                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0),
-                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0)
+                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0, style={'cursor': 'pointer'}),
+                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer'}),
+                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer'}),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer'}),
+                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer'}),
+                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer'})
                     ],
                     flush=True
                 )
@@ -186,7 +187,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
         """, style={'direction': 'rtl', 'text-align': 'right'})
 
-    elif triggered_id == 'eda':
+    elif triggered_id == 'eda-item':
         figs = []
         for col in df.columns:
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
@@ -195,7 +196,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
         return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
 
-    elif triggered_id == 'advanced':
+    elif triggered_id == 'advanced-item':
         corr = df.corr()
         fig_corr = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu', title='کورلیشن ماتریکس')
         iso = IsolationForest(contamination=0.05, random_state=42)
@@ -218,7 +219,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             """, style=BASE_STYLE)
         ]
 
-    elif triggered_id == 'models':
+    elif triggered_id == 'models-item':
         results_df = pd.DataFrame({'Model': ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest', 'XGBoost', 'Gradient Boosting', 'LightGBM', 'MLP'],
                                  'Accuracy': [0.75, 0.72, 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
         fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
@@ -238,7 +239,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
         ]
 
-    elif triggered_id == 'predict':
+    elif triggered_id == 'predict-item':
         return html.Div([
             html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
             *[html.Div([
@@ -249,13 +250,13 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
                 id='model-choice',
                 options=[{'label': 'Gradient Boosting (بهترین تک مدل)', 'value': 'gb'}, {'label': 'Voting (سه مدل برتر)', 'value': 'voting'}],
                 value='gb',
-                style=DROPDOWN_STYLE
+                style=INPUT_STYLE
             ),
             html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style=BUTTON_STYLE),
             html.Div(id='prediction-output', style=OUTPUT_STYLE)
         ])
 
-    elif triggered_id == 'recommendations':
+    elif triggered_id == 'recommendations-item':
         return html.Div([
             html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style=BASE_STYLE),
             *[html.Div([
