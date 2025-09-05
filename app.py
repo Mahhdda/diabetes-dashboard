@@ -18,7 +18,9 @@ from xhtml2pdf import pisa  # برای تولید PDF
 BASE_STYLE = {
     'direction': 'rtl',
     'textAlign': 'right',
-    'fontFamily': 'Vazir, sans-serif'  # اگه فونت Vazir داری، جایگزین کن
+    'fontFamily': 'Vazir, sans-serif',
+    'fontSize': '18px',  # افزایش سایز فونت پایه
+    'margin': '20px',  # حاشیه 20 پیکسل برای هر باکس
 }
 
 HEADER_STYLE = {
@@ -28,7 +30,8 @@ HEADER_STYLE = {
     'backgroundColor': '#ffffff',
     'borderBottom': '1px solid #e2e8f0',
     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
-    'textAlign': 'center'  # وسط‌چین کردن تایتل
+    'textAlign': 'center',  # وسط‌چین کردن تایتل
+    'fontSize': '24px',  # افزایش سایز فونت هدر
 }
 
 INPUT_STYLE = {
@@ -36,7 +39,6 @@ INPUT_STYLE = {
     'width': '100%',
     'maxWidth': '200px',
     'padding': '10px',
-    'margin': '10px 0',
     'border': '1px solid #e2e8f0',
     'borderRadius': '6px'
 }
@@ -54,7 +56,6 @@ BUTTON_STYLE = {
 
 OUTPUT_STYLE = {
     **BASE_STYLE,
-    'margin': '20px 0',
     'padding': '15px',
     'backgroundColor': '#ffffff',
     'borderRadius': '6px',
@@ -65,7 +66,6 @@ TABLE_STYLE = {
     **BASE_STYLE,
     'width': '100%',
     'maxWidth': '800px',
-    'margin': '20px auto',
     'borderCollapse': 'collapse'
 }
 
@@ -84,20 +84,28 @@ TABLE_ROW_STYLE = {
 
 GRAPH_STYLE = {
     **BASE_STYLE,
-    'margin': '20px auto',
     'borderRadius': '8px',
     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
 }
 
 ALERT_STYLE = {
     **BASE_STYLE,
-    'margin': '20px 0',
     'padding': '15px',
     'backgroundColor': '#ffe6e6',
     'border': '2px solid #ff0000',
     'borderRadius': '6px',
     'color': '#ff0000',
     'fontWeight': 'bold'
+}
+
+CONTAINER_STYLE = {
+    'display': 'flex',
+    'flexDirection': 'column',
+    'alignItems': 'center',  # وسط‌چین کردن عناصر
+    'paddingLeft': '150px',  # فاصله 150 پیکسل از چپ
+    'paddingRight': '150px',  # فاصله 150 پیکسل از راست
+    'width': '100%',
+    'boxSizing': 'border-box'
 }
 
 # لود مدل‌ها
@@ -107,7 +115,7 @@ try:
     voting_model = joblib.load("voting_model_clean.pkl")
 except FileNotFoundError:
     app = Dash(__name__)
-    app.layout = html.P("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
+    app.layout = html.P("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
     if __name__ == '__main__':
         app.run_server(debug=True)
     exit()
@@ -117,7 +125,7 @@ try:
     df = pd.read_csv("diabetest.csv")
 except FileNotFoundError:
     app = Dash(__name__)
-    app.layout = html.P("فایل دیتاست یافت نشد. لطفاً diabetest.csv را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right'})
+    app.layout = html.P("فایل دیتاست یافت نشد. لطفاً diabetest.csv را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
     if __name__ == '__main__':
         app.run_server(debug=True)
     exit()
@@ -132,18 +140,18 @@ offcanvas = html.Div(
             children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
             id="open-offcanvas",
             n_clicks=0,
-            style={'position': 'absolute', 'top': '15px', 'right': '15px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}
+            style={'position': 'absolute', 'top': '15px', 'right': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # تنظیم فاصله دکمه با توجه به padding
         ),
         dbc.Offcanvas(
             [
                 dbc.ListGroup(
                     [
-                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer'}),
-                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer'})
+                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'})
                     ],
                     flush=True
                 )
@@ -159,8 +167,8 @@ offcanvas = html.Div(
 app.layout = html.Div([
     html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style=HEADER_STYLE),
     offcanvas,
-    html.Div(id='page-content', style=BASE_STYLE)
-], style=BASE_STYLE)
+    html.Div(id='page-content', style={**BASE_STYLE, **CONTAINER_STYLE})
+], style=CONTAINER_STYLE)
 
 # کال‌بک برای باز و بسته کردن off-canvas
 @app.callback(
@@ -185,7 +193,7 @@ def toggle_offcanvas(n1, is_open):
 )
 def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
     if not ctx.triggered:
-        return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+        return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'overview-item' and overview_clicks:
@@ -197,16 +205,16 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
         - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
         این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
-        """, style={'direction': 'rtl', 'text-align': 'right'})
+        """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
 
     elif triggered_id == 'eda-item' and eda_clicks:
         figs = []
         for col in df.columns:
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
-            figs.append(dcc.Graph(figure=fig_hist))
+            figs.append(dcc.Graph(figure=fig_hist, style=GRAPH_STYLE))
         fig_box = px.box(df, y=['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure'], title="باکس پلات ویژگی‌ها")
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
-        return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
+        return figs + [dcc.Graph(figure=fig_box, style=GRAPH_STYLE), dcc.Graph(figure=fig_scatter, style=GRAPH_STYLE)]
 
     elif triggered_id == 'advanced-item' and advanced_clicks:
         corr = df.corr()
@@ -221,14 +229,14 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_reg = px.scatter(df, x='BMI', y='Glucose', title='رگرسیون خطی: BMI vs Glucose')
         fig_reg.add_scatter(x=X['BMI'], y=y_pred, mode='lines', name='خط رگرسیون', line=dict(color='red'))
         return [
-            dcc.Graph(figure=fig_corr),
-            html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right'}),
+            dcc.Graph(figure=fig_corr, style=GRAPH_STYLE),
+            html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             html.P("""
             تحلیل تکمیلی شامل:
             - شناسایی ناهنجاری‌ها با IsolationForest.
             - رگرسیون خطی برای پیش‌بینی Glucose بر اساس BMI.
             - ماتریس کورلیشن برای بررسی روابط.
-            """, style=BASE_STYLE)
+            """, style={**BASE_STYLE, 'margin': '20px'})
         ]
 
     elif triggered_id == 'models-item' and models_clicks:
@@ -240,7 +248,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             مدل‌های تست‌شده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
             بهترین مدل: Gradient Boosting روی داده‌های پاک‌شده (بعد از حذف ناهنجاری‌ها) با دقت بالا.
             ارزیابی شامل Accuracy, Precision, Recall, F1-Score, ROC-AUC و Cross-Validation.
-            """, style=BASE_STYLE),
+            """, style={**BASE_STYLE, 'margin': '20px'}),
             dash_table.DataTable(
                 data=results_df.to_dict('records'),
                 columns=[{'name': i, 'id': i} for i in results_df.columns],
@@ -253,9 +261,9 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
 
     elif triggered_id == 'predict-item' and predict_clicks:
         return html.Div([
-            html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
+            html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style={**BASE_STYLE, 'margin': '20px'}),
             *[html.Div([
-                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style=BASE_STYLE),
+                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={**BASE_STYLE, 'margin': '20px'}),
                 dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style=INPUT_STYLE)
             ]) for feature in ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']],
             dcc.Dropdown(
@@ -266,20 +274,20 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             ),
             html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style=BUTTON_STYLE),
             html.Div(id='prediction-output', style=OUTPUT_STYLE)
-        ])
+        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
 
     elif triggered_id == 'recommendations-item' and recommendations_clicks:
         return html.Div([
-            html.Label("بر اساس ویژگی‌های کلیدی: Glucose, BMI, Age, Insulin, BloodPressure, Pregnancies", style=BASE_STYLE),
+            html.Label("بر اساس ویژگی‌های کلیدی: Glucose, BMI, Age, Insulin, BloodPressure, Pregnancies", style={**BASE_STYLE, 'margin': '20px'}),
             *[html.Div([
-                html.Label(feature, style=BASE_STYLE),
+                html.Label(feature, style={**BASE_STYLE, 'margin': '20px'}),
                 dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature in ['Age', 'Pregnancies'] else 0.0, step=1 if feature in ['Age', 'Pregnancies'] else 0.1, style=INPUT_STYLE)
             ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure', 'Pregnancies']],
             html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style=BUTTON_STYLE),
-            html.Button('دانلود برنامه به صورت PDF', id='download-button', n_clicks=0, style={**BUTTON_STYLE, 'backgroundColor': '#008000', 'margin': '10px'}),
+            html.Button('دانلود برنامه به صورت PDF', id='download-button', n_clicks=0, style={**BUTTON_STYLE, 'backgroundColor': '#008000', 'margin': '20px'}),
             dcc.Download(id='download-pdf'),
             html.Div(id='recommend-output', style=OUTPUT_STYLE)
-        ])
+        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
 
 # کال‌بک برای پیش‌بینی
 @app.callback(
@@ -314,13 +322,13 @@ def generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies
     <head>
         <meta charset="UTF-8">
         <style>
-            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; }}
-            h1 {{ color: #1e3a8a; text-align: center; }}
+            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; font-size: 18px; margin: 20px; }}
+            h1 {{ color: #1e3a8a; text-align: center; font-size: 24px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             th, td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: right; }}
             th {{ background-color: #1e3a8a; color: white; }}
-            .alert {{ color: red; font-weight: bold; border: 2px solid red; padding: 10px; margin: 10px 0; }}
-            p {{ margin: 10px 0; }}
+            .alert {{ color: red; font-weight: bold; border: 2px solid red; padding: 10px; margin: 20px 0; }}
+            p {{ margin: 20px 0; }}
         </style>
     </head>
     <body>
@@ -457,13 +465,13 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
         # خروجی رندر شده در داشبورد
         output_children = [
             html.Div([html.P(alert, style=ALERT_STYLE) for alert in alerts]) if alerts else html.Div(),
-            html.P(diet, style={'direction': 'rtl', 'text-align': 'right'}),
+            html.P(diet, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             diet_table,
-            html.P(sleep, style={'direction': 'rtl', 'text-align': 'right'}),
-            html.P(exercise, style={'direction': 'rtl', 'text-align': 'right'}),
-            html.P(walking, style={'direction': 'rtl', 'text-align': 'right'}),
+            html.P(sleep, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            html.P(exercise, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            html.P(walking, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             dcc.Graph(figure=fig_calories, style=GRAPH_STYLE),
-            html.P("نکته کلی: این پیشنهادات عمومی هستند. برای برنامه دقیق، با پزشک مشورت کنید.", style={'direction': 'rtl', 'text-align': 'right', 'color': '#FF0000'})
+            html.P("نکته کلی: این پیشنهادات عمومی هستند. برای برنامه دقیق، با پزشک مشورت کنید.", style={'direction': 'rtl', 'text-align': 'right', 'color': '#FF0000', 'fontSize': '18px', 'margin': '20px'})
         ]
 
         # اگر دکمه دانلود کلیک شده باشد
@@ -471,7 +479,7 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
             return output_children, dcc.send_bytes(pdf_data, "برنامه_غذایی_و_ورزشی.pdf")
         return output_children, None
 
-    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'}), None
+    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}), None
 
 if __name__ == '__main__':
     app.run_server(debug=True)
