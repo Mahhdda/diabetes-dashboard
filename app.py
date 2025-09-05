@@ -100,8 +100,8 @@ CONTAINER_STYLE = {
     'display': 'flex',
     'flexDirection': 'column',
     'alignItems': 'center',  # وسط‌چین کردن عناصر
-    'paddingLeft': '90px', 
-    'paddingRight': '90px',
+    'paddingLeft': '150px',  # فاصله 150 پیکسل از چپ
+    'paddingRight': '150px',  # فاصله 150 پیکسل از راست
     'width': '100%',
     'boxSizing': 'border-box'
 }
@@ -147,7 +147,7 @@ offcanvas = html.Div(
                         dbc.ListGroupItem("اهداف داشبورد", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
-                        dbc.ListGroupItem("مدل‌های طبقه بندی و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'})
                     ],
@@ -203,10 +203,10 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             - تشخیص و مدیریت ناهنجاری‌ها و مقادیر گمشده.
             - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
             - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
-            این داشبورد با Dash ساخته شده و روی Render دیپلوی می‌شود.
+            این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
             """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-            html.Img(src='../img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
-            html.P("تصویر بارگذاری نشد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
+            html.Img(src='/img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
+            html.P("در صورت لود نشدن تصویر، لطفاً مطمئن شوید که فایل img1.png در پوشه img قرار دارد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
             html.P("""
             مزایا و کاربردهای داشبورد:
             این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
@@ -240,7 +240,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_reg.add_scatter(x=X['BMI'], y=y_pred, mode='lines', name='خط رگرسیون', line=dict(color='red'))
         return [
             dcc.Graph(figure=fig_corr, style=GRAPH_STYLE),
-            html.P(f"تعداد داده‌های حذف شده: {num_removed}", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             html.P("""
             تحلیل تکمیلی شامل:
             - شناسایی ناهنجاری‌ها با IsolationForest.
