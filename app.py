@@ -1,8 +1,7 @@
-from dash import Dash, html, dcc, Input, Output, State
+from dash import Dash, html, dcc, Input, Output, State, ctx
 from dash import dash_table
 app = Dash(__name__)
 application = app.server
-from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import joblib
@@ -171,7 +170,6 @@ def toggle_offcanvas(n1, is_open):
      Input('recommendations-item', 'n_clicks')]
 )
 def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
-    ctx = dash.callback_context
     if not ctx.triggered:
         return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right'})
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
