@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 # تعریف استایل‌های مشترک
 BASE_STYLE = {
     'direction': 'rtl',
-    'textAlign': 'right',
+    'textAlign': 'center',
     'fontFamily': 'Vazir, sans-serif'  # اگه فونت Vazir داری، جایگزین کن
 }
 
