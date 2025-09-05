@@ -110,13 +110,13 @@ except FileNotFoundError:
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"])
 
 # تعریف off-canvas برای منو
 offcanvas = html.Div(
     [
         dbc.Button(
-            children=[html.I(className="fas fa-bars")],  # آیکون همبرگری با Font Awesome (در دسترس از طریق Bootstrap)
+            children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
             id="open-offcanvas",
             n_clicks=0,
             style={'position': 'absolute', 'top': '15px', 'right': '15px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}
@@ -176,7 +176,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right'})
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    if triggered_id == 'overview-item':
+    if triggered_id == 'overview-item' and overview_clicks:
         return html.P("""
         این پروژه داده‌کاوی بر روی دیتاست Pima Indians Diabetes تمرکز دارد که شامل 768 رکورد و 9 ویژگی است. 
         اهداف اصلی:
@@ -187,7 +187,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
         """, style={'direction': 'rtl', 'text-align': 'right'})
 
-    elif triggered_id == 'eda-item':
+    elif triggered_id == 'eda-item' and eda_clicks:
         figs = []
         for col in df.columns:
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
@@ -196,7 +196,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
         return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
 
-    elif triggered_id == 'advanced-item':
+    elif triggered_id == 'advanced-item' and advanced_clicks:
         corr = df.corr()
         fig_corr = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu', title='کورلیشن ماتریکس')
         iso = IsolationForest(contamination=0.05, random_state=42)
@@ -219,7 +219,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             """, style=BASE_STYLE)
         ]
 
-    elif triggered_id == 'models-item':
+    elif triggered_id == 'models-item' and models_clicks:
         results_df = pd.DataFrame({'Model': ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest', 'XGBoost', 'Gradient Boosting', 'LightGBM', 'MLP'],
                                  'Accuracy': [0.75, 0.72, 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
         fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
@@ -239,7 +239,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
         ]
 
-    elif triggered_id == 'predict-item':
+    elif triggered_id == 'predict-item' and predict_clicks:
         return html.Div([
             html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
             *[html.Div([
@@ -256,7 +256,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             html.Div(id='prediction-output', style=OUTPUT_STYLE)
         ])
 
-    elif triggered_id == 'recommendations-item':
+    elif triggered_id == 'recommendations-item' and recommendations_clicks:
         return html.Div([
             html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style=BASE_STYLE),
             *[html.Div([
