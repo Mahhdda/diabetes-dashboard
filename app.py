@@ -36,7 +36,7 @@ DROPDOWN_STYLE = {
     'padding': '10px',
     'borderRadius': '8px',
     'border': '1px solid #e2e8f0',
-    'backgroundColor': '#ffffff',
+    'backgroundColor': 'red',
     'boxShadow': '0 1px 3px rgba(0, 0, 0, 0.1)'
 }
 
