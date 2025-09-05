@@ -35,7 +35,7 @@ except FileNotFoundError:
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=['style.css'])
+app = Dash(__name__, external_stylesheets=['assets/style.css'])
 
 app.layout = html.Div([
     html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style={'color': 'red'}),
@@ -227,3 +227,4 @@ if __name__ == '__main__':
 application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8000)
+
