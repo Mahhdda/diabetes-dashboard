@@ -221,7 +221,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
             figs.append(dcc.Graph(figure=fig_hist, style=GRAPH_STYLE))
         fig_box = px.box(df, y=['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure'], title="باکس پلات ویژگی‌ها")
-        fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
+        fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='RdBu')
         return html.Div([
             *figs,
             dcc.Graph(figure=fig_box, style=GRAPH_STYLE),
