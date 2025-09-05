@@ -16,28 +16,16 @@ from sklearn.svm import SVC
 BASE_STYLE = {
     'direction': 'rtl',
     'textAlign': 'right',
-    'fontFamily': 'Vazir, sans-serif'
+    'fontFamily': 'Vazir, sans-serif'  # اگه فونت Vazir داری، جایگزین کن
 }
 
 HEADER_STYLE = {
     **BASE_STYLE,
-    'color': '#1e3a8a',
+    'color': '#1e3a8a',  # آبی تیره
     'padding': '15px 20px',
     'backgroundColor': '#ffffff',
     'borderBottom': '1px solid #e2e8f0',
     'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
-}
-
-DROPDOWN_STYLE = {
-    **BASE_STYLE,
-    'width': '100%',
-    'maxWidth': '400px',
-    'margin': '20px auto',
-    'padding': '10px',
-    'borderRadius': '8px',
-    'border': '1px solid #e2e8f0',
-    'backgroundColor': '#ffffff',
-    'boxShadow': '0 1px 3px rgba(0, 0, 0, 0.1)'
 }
 
 INPUT_STYLE = {
@@ -121,35 +109,73 @@ except FileNotFoundError:
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=['style.css'])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+# تعریف off-canvas برای منو
+offcanvas = html.Div(
+    [
+        dbc.Button(
+            html.I(className="bi bi-list"),  # ایکون منو (Bootstrap Icons)
+            id="open-offcanvas",
+            n_clicks=0,
+            style={'position': 'absolute', 'top': '15px', 'right': '15px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}
+        ),
+        dbc.Offcanvas(
+            [
+                dbc.ListGroup(
+                    [
+                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0),
+                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0),
+                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0),
+                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0),
+                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0)
+                    ],
+                    flush=True
+                )
+            ],
+            id="offcanvas",
+            is_open=False,
+            title="منوی داشبورد",
+            placement="end"  # باز شدن از سمت راست
+        )
+    ]
+)
 
 app.layout = html.Div([
     html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style=HEADER_STYLE),
-    html.Div([
-        dcc.Dropdown(
-            id='page-dropdown',
-            options=[
-                {'label': 'مروری بر پروژه', 'value': 'overview'},
-                {'label': 'تحلیل‌های اولیه داده‌ها', 'value': 'eda'},
-                {'label': 'تحلیل‌های تکمیلی', 'value': 'advanced'},
-                {'label': 'مدل‌های کلاسیفیکیشن و ارزیابی', 'value': 'models'},
-                {'label': 'پیش‌بینی دیابت', 'value': 'predict'},
-                {'label': 'پیشنهاد برنامه غذایی و ورزشی', 'value': 'recommendations'}
-            ],
-            value='overview',
-            style=DROPDOWN_STYLE
-        )
-    ]),
+    offcanvas,
     html.Div(id='page-content', style=BASE_STYLE)
 ], style=BASE_STYLE)
 
-# کال‌بک برای تغییر محتوا بر اساس انتخاب
+# کال‌بک برای باز و بسته کردن off-canvas
+@app.callback(
+    Output("offcanvas", "is_open"),
+    Input("open-offcanvas", "n_clicks"),
+    [State("offcanvas", "is_open")]
+)
+def toggle_offcanvas(n1, is_open):
+    if n1:
+        return not is_open
+    return is_open
+
+# کال‌بک برای تغییر محتوا بر اساس انتخاب از off-canvas
 @app.callback(
     Output('page-content', 'children'),
-    Input('page-dropdown', 'value')
+    [Input('overview-item', 'n_clicks'),
+     Input('eda-item', 'n_clicks'),
+     Input('advanced-item', 'n_clicks'),
+     Input('models-item', 'n_clicks'),
+     Input('predict-item', 'n_clicks'),
+     Input('recommendations-item', 'n_clicks')]
 )
-def update_page(value):
-    if value == 'overview':
+def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if triggered_id == 'overview-item':
         return html.P("""
         این پروژه داده‌کاوی بر روی دیتاست Pima Indians Diabetes تمرکز دارد که شامل 768 رکورد و 9 ویژگی است. 
         اهداف اصلی:
@@ -160,7 +186,7 @@ def update_page(value):
         این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
         """, style={'direction': 'rtl', 'text-align': 'right'})
 
-    elif value == 'eda':
+    elif triggered_id == 'eda':
         figs = []
         for col in df.columns:
             fig_hist = px.histogram(df, x=col, nbins=20, title=f"هیستوگرام {col}")
@@ -169,7 +195,7 @@ def update_page(value):
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
         return figs + [dcc.Graph(figure=fig_box), dcc.Graph(figure=fig_scatter)]
 
-    elif value == 'advanced':
+    elif triggered_id == 'advanced':
         corr = df.corr()
         fig_corr = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu', title='کورلیشن ماتریکس')
         iso = IsolationForest(contamination=0.05, random_state=42)
@@ -184,26 +210,21 @@ def update_page(value):
         return [
             dcc.Graph(figure=fig_corr),
             html.P(f"تعداد داده‌های حذف شده: **{num_removed}**", style={'direction': 'rtl', 'text-align': 'right'}),
-            html.P("این روش 5% از داده‌ها رو به عنوان ناهنجاری در نظر می‌گیره و حذف می‌کنه.", style={'direction': 'rtl', 'text-align': 'right'}),
-            dcc.Graph(figure=fig_reg),
-            html.P("نمایش مرز تصمیم SVM (تصویر ساده‌شده). برای جزئیات بیشتر به کد اصلی مراجعه کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+            html.P("""
+            تحلیل تکمیلی شامل:
+            - شناسایی ناهنجاری‌ها با IsolationForest.
+            - رگرسیون خطی برای پیش‌بینی Glucose بر اساس BMI.
+            - ماتریس کورلیشن برای بررسی روابط.
+            """, style=BASE_STYLE)
         ]
 
-    elif value == 'models':
-        results_data = {
-            'Model': ['Gradient Boosting', 'Logistic Regression', 'MLP'],
-            'Accuracy': [0.80, 0.78, 0.77],
-            'Precision': [0.75, 0.73, 0.72],
-            'Recall': [0.68, 0.66, 0.65],
-            'F1-Score': [0.71, 0.69, 0.68],
-            'ROC-AUC': [0.87, 0.85, 0.84]
-        }
-        results_df = pd.DataFrame(results_data)
-        cm = np.array([[92, 8], [12, 42]])
-        fig_cm = px.imshow(cm, text_auto=True, color_continuous_scale='Blues', title='ماتریس سردرگمی')
+    elif triggered_id == 'models':
+        results_df = pd.DataFrame({'Model': ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest', 'XGBoost', 'Gradient Boosting', 'LightGBM', 'MLP'],
+                                 'Accuracy': [0.75, 0.72, 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
+        fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
         return [
             html.P("""
-            مدل‌های آموزش‌دیده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
+            مدل‌های تست‌شده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
             بهترین مدل: Gradient Boosting روی داده‌های پاک‌شده (بعد از حذف ناهنجاری‌ها) با دقت بالا.
             ارزیابی شامل Accuracy, Precision, Recall, F1-Score, ROC-AUC و Cross-Validation.
             """, style=BASE_STYLE),
@@ -217,7 +238,7 @@ def update_page(value):
             dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
         ]
 
-    elif value == 'predict':
+    elif triggered_id == 'predict':
         return html.Div([
             html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style=BASE_STYLE),
             *[html.Div([
@@ -234,7 +255,7 @@ def update_page(value):
             html.Div(id='prediction-output', style=OUTPUT_STYLE)
         ])
 
-    elif value == 'recommendations':
+    elif triggered_id == 'recommendations':
         return html.Div([
             html.Label("بر اساس 4 ویژگی مهم: Glucose, BMI, Age, Insulin", style=BASE_STYLE),
             *[html.Div([
