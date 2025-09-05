@@ -21,6 +21,7 @@ BASE_STYLE = {
     'fontFamily': 'Vazir, sans-serif',
     'fontSize': '18px',  # افزایش سایز فونت پایه
     'margin': '20px',  # حاشیه 20 پیکسل برای هر باکس
+    'lineHeight': '1.7'  # افزایش line space
 }
 
 HEADER_STYLE = {
@@ -114,7 +115,7 @@ try:
     scaler_clean = joblib.load("scaler_clean.pkl")
     voting_model = joblib.load("voting_model_clean.pkl")
 except FileNotFoundError:
-    app = Dash(__name__)
+    app = Dash(__name__, assets_folder='img')
     app.layout = html.P("فایل‌های مدل یافت نشد. لطفاً آن‌ها را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
     if __name__ == '__main__':
         app.run_server(debug=True)
@@ -124,14 +125,14 @@ except FileNotFoundError:
 try:
     df = pd.read_csv("diabetest.csv")
 except FileNotFoundError:
-    app = Dash(__name__)
+    app = Dash(__name__, assets_folder='img')
     app.layout = html.P("فایل دیتاست یافت نشد. لطفاً diabetest.csv را آپلود کنید.", style={'color': '#FF0000', 'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
     if __name__ == '__main__':
         app.run_server(debug=True)
     exit()
 
 # تنظیم Dash با استایل خارجی
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"], assets_folder='img')
 
 # تعریف off-canvas برای منو
 offcanvas = html.Div(
@@ -140,13 +141,13 @@ offcanvas = html.Div(
             children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
             id="open-offcanvas",
             n_clicks=0,
-            style={'position': 'absolute', 'top': '15px', 'right': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # تنظیم فاصله دکمه با توجه به padding
+            style={'position': 'absolute', 'top': '15px', 'left': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # تغییر به left برای سمت چپ
         ),
         dbc.Offcanvas(
             [
                 dbc.ListGroup(
                     [
-                        dbc.ListGroupItem("مروری بر پروژه", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
+                        dbc.ListGroupItem("اهداف داشبورد", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
                         dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
                         dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
                         dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
@@ -159,7 +160,7 @@ offcanvas = html.Div(
             id="offcanvas",
             is_open=False,
             title="منوی داشبورد",
-            placement="end"  # باز شدن از سمت راست
+            placement="start"  # باز شدن از سمت چپ
         )
     ]
 )
@@ -197,15 +198,21 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'overview-item' and overview_clicks:
-        return html.P("""
-        این پروژه داده‌کاوی بر روی دیتاست Pima Indians Diabetes تمرکز دارد که شامل 768 رکورد و 9 ویژگی است. 
-        اهداف اصلی:
-        - تحلیل اکتشافی داده‌ها (EDA) برای درک توزیع و روابط ویژگی‌ها.
-        - تشخیص و مدیریت ناهنجاری‌ها و مقادیر گمشده.
-        - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
-        - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
-        این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
-        """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
+        return html.Div([
+            html.P("""
+            اهداف اصلی:
+            - تحلیل اکتشافی داده‌ها (EDA) برای درک توزیع و روابط ویژگی‌ها.
+            - تشخیص و مدیریت ناهنجاری‌ها و مقادیر گمشده.
+            - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
+            - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
+            این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
+            """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            html.Img(src='img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}),  # عکس مرتبط وسط متن
+            html.P("""
+            مزایا و کاربردهای داشبورد:
+            این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
+            """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
+        ])
 
     elif triggered_id == 'eda-item' and eda_clicks:
         figs = []
