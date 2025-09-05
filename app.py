@@ -218,7 +218,7 @@ def update_page(home_clicks, overview_clicks, eda_clicks, advanced_clicks, model
                 - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
                 این داشبورد با Dash ساخته شده و روی Render دیپلوی می‌شود.
                 """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-                html.Img(src='../img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
+                html.Img(src='/img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
                 html.P("تصویر بارگذاری نشد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
                 html.P("""
                 مزایا و کاربردهای داشبورد:
@@ -528,3 +528,4 @@ if __name__ == '__main__':
 application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1', port=8000)
+
