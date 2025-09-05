@@ -1,0 +1,26 @@
+FROM python:3.11.9
+
+# نصب وابستگی‌های سیستمی برای xhtml2pdf
+RUN apt-get update && apt-get install -y \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# تنظیم دایرکتوری کاری
+WORKDIR /app
+
+# کپی فایل requirements.txt و نصب وابستگی‌ها
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# کپی تمام فایل‌های پروژه
+COPY . .
+
+# تنظیم متغیر محیطی برای پورت (Render معمولاً از پورت 10000 استفاده می‌کند)
+ENV PORT 10000
+
+# اجرای اپلیکیشن با Gunicorn
+CMD ["gunicorn", "app:application", "--timeout", "120", "--bind", "0.0.0.0:$PORT"]
