@@ -296,36 +296,128 @@ def predict_diabetes(n_clicks, pregnancies, glucose, blood_pressure, skin_thickn
     Input('recommend-button', 'n_clicks'),
     [Input(f'rec-input-{feature}', 'value') for feature in ['Glucose', 'BMI', 'Age', 'Insulin']]
 )
-def get_recommendations(n_clicks, glucose, bmi, age, insulin):
-    if n_clicks > 0 and all(v is not None for v in [glucose, bmi, age, insulin]):
-        diet = "برنامه غذایی متعادل: "
+def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, insulin, blood_pressure, pregnancies):
+    ctx = dash.callback_context
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+
+    if (recommend_clicks > 0 or download_clicks > 0) and all(v is not None for v in [glucose, bmi, age, insulin, blood_pressure, pregnancies]):
+        # هشدارهای پیشرفته
+        alerts = []
+        if glucose > 200:
+            alerts.append("هشدار: سطح گلوکز شما بسیار بالاست! فوراً با پزشک مشورت کنید.")
+        if insulin > 200:
+            alerts.append("هشدار: سطح انسولین غیرطبیعی است. لطفاً با متخصص غدد مشورت کنید.")
+        if blood_pressure > 140:
+            alerts.append("هشدار: فشار خون بالا! به پزشک قلب مراجعه کنید.")
+        if bmi > 30:
+            alerts.append("هشدار: BMI شما نشان‌دهنده چاقی است. کاهش وزن ضروری است.")
+        if pregnancies > 6:
+            alerts.append("هشدار: تعداد بالای بارداری ممکن است خطر دیابت را افزایش دهد. با پزشک مشورت کنید.")
+
+        # محاسبه کالری روزانه تخمینی
+        bmr = 10 * bmi + 6.25 * 170 - 5 * age + 5  # فرض قد متوسط 170cm
+        daily_calories = bmr * 1.2 if bmi > 25 else bmr * 1.5
+
+        # رژیم غذایی
+        diet = "برنامه غذایی شخصی‌سازی‌شده: "
         if glucose > 140:
-            diet += "غذاهای کم‌شکر، سبزیجات بیشتر، پروتئین بدون چربی. "
+            diet += "تمرکز روی غذاهای با شاخص گلیسمیک پایین (GI < 55). اجتناب از شکر و کربوهیدرات‌های ساده. "
         if bmi > 25:
-            diet += "رژیم کم‌کالری، اجتناب از فست‌فود. نمونه روزانه: صبحانه: تخم‌مرغ و سبزی، ناهار: سالاد مرغ، شام: ماهی و بروکلی."
+            diet += f"کالری روزانه پیشنهادی: {int(daily_calories)} کالری برای کاهش وزن. "
+            diet += "اجتناب از فست‌فود و نوشابه‌ها. "
         else:
-            diet += "غذاهای سالم با تعادل کربوهیدرات، پروتئین و چربی."
+            diet += f"کالری روزانه پیشنهادی: {int(daily_calories)} کالری برای حفظ وزن. تعادل کربوهیدرات (45-65%)، پروتئین (10-35%) و چربی (20-35%). "
+        if pregnancies > 0:
+            diet += "برای زنان باردار: افزایش مصرف فولات و آهن از سبزیجات برگ‌دار و گوشت بدون چربی. "
+
+        # جدول برنامه غذایی
+        meal_plan = pd.DataFrame({
+            'وعده': ['صبحانه', 'میان‌وعده', 'ناهار', 'میان‌وعده', 'شام'],
+            'پیشنهاد': [
+                'تخم‌مرغ آب‌پز با سبزیجات و نان جو کامل (300 کالری)',
+                'یک سیب متوسط با بادام (200 کالری)',
+                'سالاد مرغ گریل با کینوا و سبزیجات (500 کالری)',
+                'ماست کم‌چرب با توت‌ها (150 کالری)',
+                'ماهی سالمون کبابی با بروکلی و برنج قهوه‌ای (400 کالری)'
+            ],
+            'نکته': [
+                'پروتئین بالا برای کنترل قند خون',
+                'فیبر بالا برای احساس سیری',
+                'تعادل پروتئین و کربوهیدرات پیچیده',
+                'کم‌شکر برای جلوگیری از پیک انسولین',
+                'اسیدهای چرب امگا-3 برای سلامت قلب'
+            ]
+        })
+        if glucose > 140 or insulin > 100:
+            meal_plan['پیشنهاد'] = meal_plan['پیشنهاد'].apply(lambda x: x + ' (کم GI)')
+
+        diet_table = dash_table.DataTable(
+            data=meal_plan.to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in meal_plan.columns],
+            style_table=TABLE_STYLE,
+            style_cell=TABLE_ROW_STYLE,
+            style_header=TABLE_HEADER_STYLE
+        )
+
+        # خواب
         sleep = "خواب کافی: "
         if age < 30:
-            sleep += "8-9 ساعت در شب."
+            sleep += "8-9 ساعت در شب. نکته: اتاق تاریک و خنک برای کیفیت بهتر خواب."
         elif age < 50:
-            sleep += "7-8 ساعت."
+            sleep += "7-8 ساعت. نکته: اجتناب از کافئین بعد از ظهر."
         else:
-            sleep += "6-7 ساعت، با چرت کوتاه روزانه."
-        exercise = "برنامه ورزشی: "
+            sleep += "6-7 ساعت، با چرت کوتاه 20 دقیقه‌ای روزانه. نکته: روتین خواب منظم."
+
+        # ورزش
+        exercise = "برنامه ورزشی شخصی: "
         if bmi > 25 or insulin > 100:
-            exercise += "ورزش روزانه 45 دقیقه: ایروبیک، وزنه‌برداری سبک."
+            exercise += "45-60 دقیقه روزانه: 30 دقیقه ایروبیک (دویدن یا دوچرخه) + 15 دقیقه وزنه‌برداری سبک. "
+            exercise += "هدف: سوزاندن 300-500 کالری در جلسه."
         else:
-            exercise += "ورزش متوسط 30 دقیقه: یوگا یا شنا."
-        walking = "پیاده‌روی: حداقل 5000 قدم روزانه، اگر BMI بالا باشد 10000 قدم."
-        
-        return [
+            exercise += "30 دقیقه متوسط: یوگا، شنا یا پیاده‌روی سریع. "
+            exercise += "هدف: حفظ تناسب اندام و کنترل قند."
+        if blood_pressure > 120:
+            exercise += "تمرکز روی ورزش‌های آرام‌بخش مثل یوگا برای کاهش فشار خون."
+
+        # پیاده‌روی
+        walking = "پیاده‌روی: "
+        if bmi > 25:
+            walking += "حداقل 10000 قدم روزانه (تقریباً 8 کیلومتر، سوزاندن ~400 کالری). "
+        else:
+            walking += "حداقل 5000 قدم (سوزاندن ~200 کالری). "
+        walking += "نکته: استفاده از اپ‌هایی مثل Google Fit برای پیگیری و چالش‌های روزانه."
+
+        # نمودار توزیع کالری
+        fig_calories = px.pie(values=[daily_calories * 0.5, daily_calories * 0.3, daily_calories * 0.2], 
+                              names=['کربوهیدرات', 'پروتئین', 'چربی'], 
+                              title='توزیع پیشنهادی کالری روزانه',
+                              color_discrete_sequence=px.colors.sequential.Blues)
+
+        # تولید محتوای PDF
+        pdf_content = generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies, diet, meal_plan, sleep, exercise, walking, alerts)
+        output = BytesIO()
+        pisa.CreatePDF(pdf_content, dest=output)
+        pdf_data = output.getvalue()
+        output.close()
+
+        # خروجی رندر شده در داشبورد
+        output_children = [
+            html.Div([html.P(alert, style=ALERT_STYLE) for alert in alerts]) if alerts else html.Div(),
             html.P(diet, style={'direction': 'rtl', 'text-align': 'right'}),
+            diet_table,
             html.P(sleep, style={'direction': 'rtl', 'text-align': 'right'}),
             html.P(exercise, style={'direction': 'rtl', 'text-align': 'right'}),
-            html.P(walking, style={'direction': 'rtl', 'text-align': 'right'})
+            html.P(walking, style={'direction': 'rtl', 'text-align': 'right'}),
+            dcc.Graph(figure=fig_calories, style=GRAPH_STYLE),
+            html.P("نکته کلی: این پیشنهادات عمومی هستند. برای برنامه دقیق، با پزشک مشورت کنید.", style={'direction': 'rtl', 'text-align': 'right', 'color': '#FF0000'})
         ]
-    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'})
+
+        # اگر دکمه دانلود کلیک شده باشد
+        if triggered_id == 'download-button':
+            return output_children, dcc.send_bytes(pdf_data, "برنامه_غذایی_و_ورزشی.pdf")
+        return output_children, None
+
+    return html.P("لطفاً مقادیر را وارد کنید.", style={'direction': 'rtl', 'text-align': 'right'}), None
 
 if __name__ == '__main__':
     app.run_server(debug=True)
