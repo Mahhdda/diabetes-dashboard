@@ -141,26 +141,27 @@ offcanvas = html.Div(
             children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
             id="open-offcanvas",
             n_clicks=0,
-            style={'position': 'absolute', 'top': '15px', 'left': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # تغییر به left برای سمت چپ
+            style={'position': 'absolute', 'top': '15px', 'right': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # بازگشت به سمت راست
         ),
         dbc.Offcanvas(
             [
                 dbc.ListGroup(
                     [
-                        dbc.ListGroupItem("اهداف داشبورد", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
-                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
-                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
-                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
-                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'}),
-                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px'})
+                        dbc.ListGroupItem("اهداف داشبورد", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("مدل‌های کلاسیفیکیشن و ارزیابی", id="models-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("پیش‌بینی دیابت", id="predict-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
+                        dbc.ListGroupItem("پیشنهاد برنامه غذایی و ورزشی", id="recommendations-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'})
                     ],
-                    flush=True
+                    flush=True,
+                    style={'textAlign': 'right'}  # راست‌چین کردن آیتم‌های منو
                 )
             ],
             id="offcanvas",
             is_open=False,
             title="منوی داشبورد",
-            placement="start"  # باز شدن از سمت چپ
+            placement="end"  # باز شدن از سمت راست
         )
     ]
 )
@@ -207,7 +208,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
             این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
             """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-            html.Img(src='img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}),  # عکس مرتبط وسط متن
+            html.Img(src='img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}),
             html.P("""
             مزایا و کاربردهای داشبورد:
             این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
@@ -221,7 +222,11 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             figs.append(dcc.Graph(figure=fig_hist, style=GRAPH_STYLE))
         fig_box = px.box(df, y=['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure'], title="باکس پلات ویژگی‌ها")
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='coolwarm')
-        return figs + [dcc.Graph(figure=fig_box, style=GRAPH_STYLE), dcc.Graph(figure=fig_scatter, style=GRAPH_STYLE)]
+        return html.Div([
+            *figs,
+            dcc.Graph(figure=fig_box, style=GRAPH_STYLE),
+            dcc.Graph(figure=fig_scatter, style=GRAPH_STYLE)
+        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
 
     elif triggered_id == 'advanced-item' and advanced_clicks:
         corr = df.corr()
@@ -329,7 +334,7 @@ def generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies
     <head>
         <meta charset="UTF-8">
         <style>
-            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; font-size: 18px; margin: 20px; }}
+            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; font-size: 18px; margin: 20px; line-height: 1.7; }}
             h1 {{ color: #1e3a8a; text-align: center; font-size: 24px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             th, td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: right; }}
