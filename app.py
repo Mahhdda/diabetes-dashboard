@@ -28,11 +28,8 @@ HEADER_STYLE = {
     **BASE_STYLE,
     'color': '#1e3a8a',  # آبی تیره
     'padding': '15px 20px',
-    'backgroundColor': '#ffffff',
-    'borderBottom': '1px solid #e2e8f0',
-    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)',
     'textAlign': 'center',  # وسط‌چین کردن تایتل
-    'fontSize': '24px',  # افزایش سایز فونت هدر
+    'fontSize': '28px'  # افزایش سایز فونت هدر به 28px
 }
 
 INPUT_STYLE = {
@@ -137,11 +134,11 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://cdnjs.
 # تعریف off-canvas برای منو
 offcanvas = html.Div(
     [
-        dbc.Button(
-            children=[html.I(className="fas fa-bars")],  # آیکون همبرگری
+        html.I(
+            className="fas fa-bars",
             id="open-offcanvas",
             n_clicks=0,
-            style={'position': 'absolute', 'top': '15px', 'right': '165px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af'}  # بازگشت به سمت راست
+            style={'position': 'absolute', 'top': '15px', 'right': '60px', 'zIndex': '1000', 'fontSize': '24px', 'color': '#1e40af', 'cursor': 'pointer'}  # فقط آیکون بدون دکمه
         ),
         dbc.Offcanvas(
             [
@@ -167,7 +164,7 @@ offcanvas = html.Div(
 )
 
 app.layout = html.Div([
-    html.H1("داشبورد تشخیص دیابت با Gradient Boosting", style=HEADER_STYLE),
+    html.H1("داشبورد تشخیص دیابت", style=HEADER_STYLE),
     offcanvas,
     html.Div(id='page-content', style={**BASE_STYLE, **CONTAINER_STYLE})
 ], style=CONTAINER_STYLE)
@@ -208,7 +205,8 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
             این داشبورد با Dash ساخته شده و روی Render deploy می‌شود.
             """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-            html.Img(src='img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}),
+            html.Img(src='/img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
+            html.P("در صورت لود نشدن تصویر، لطفاً مطمئن شوید که فایل img1.png در پوشه img قرار دارد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
             html.P("""
             مزایا و کاربردهای داشبورد:
             این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
@@ -253,7 +251,7 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
 
     elif triggered_id == 'models-item' and models_clicks:
         results_df = pd.DataFrame({'Model': ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest', 'XGBoost', 'Gradient Boosting', 'LightGBM', 'MLP'],
-                                 'Accuracy': [0.75, 0.72, 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
+                                 'Accuracy': [0.75, '0.72', 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
         fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
         return [
             html.P("""
