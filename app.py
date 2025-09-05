@@ -144,6 +144,7 @@ offcanvas = html.Div(
             [
                 dbc.ListGroup(
                     [
+                        dbc.ListGroupItem("صفحه اصلی", id="home-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("اهداف داشبورد", id="overview-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("تحلیل‌های اولیه داده‌ها", id="eda-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
                         dbc.ListGroupItem("تحلیل‌های تکمیلی", id="advanced-item", n_clicks=0, style={'cursor': 'pointer', 'fontSize': '18px', 'textAlign': 'right'}),
@@ -164,7 +165,7 @@ offcanvas = html.Div(
 )
 
 app.layout = html.Div([
-    html.H1("داشبورد تشخیص دیابت", style=HEADER_STYLE),
+    html.H1(id="page-title", style=HEADER_STYLE),
     offcanvas,
     html.Div(id='page-content', style={**BASE_STYLE, **CONTAINER_STYLE})
 ], style=CONTAINER_STYLE)
@@ -180,38 +181,52 @@ def toggle_offcanvas(n1, is_open):
         return not is_open
     return is_open
 
-# کال‌بک برای تغییر محتوا بر اساس انتخاب از off-canvas
+# کال‌بک برای تغییر محتوا و عنوان بر اساس انتخاب از off-canvas
 @app.callback(
-    Output('page-content', 'children'),
-    [Input('overview-item', 'n_clicks'),
+    [Output('page-content', 'children'),
+     Output('page-title', 'children')],
+    [Input('home-item', 'n_clicks'),
+     Input('overview-item', 'n_clicks'),
      Input('eda-item', 'n_clicks'),
      Input('advanced-item', 'n_clicks'),
      Input('models-item', 'n_clicks'),
      Input('predict-item', 'n_clicks'),
      Input('recommendations-item', 'n_clicks')]
 )
-def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
+def update_page(home_clicks, overview_clicks, eda_clicks, advanced_clicks, models_clicks, predict_clicks, recommendations_clicks):
     if not ctx.triggered:
-        return html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
+        return [
+            html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            "داشبورد تشخیص دیابت"
+        ]
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    if triggered_id == 'overview-item' and overview_clicks:
-        return html.Div([
-            html.P("""
-            اهداف اصلی:
-            - تحلیل اکتشافی داده‌ها (EDA) برای درک توزیع و روابط ویژگی‌ها.
-            - تشخیص و مدیریت ناهنجاری‌ها و مقادیر گمشده.
-            - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
-            - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
-            این داشبورد با Dash ساخته شده و روی Render دیپلوی می‌شود.
-            """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-            html.Img(src='../img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
-            html.P("تصویر بارگذاری نشد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
-            html.P("""
-            مزایا و کاربردهای داشبورد:
-            این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
-            """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
-        ])
+    if triggered_id == 'home-item' and home_clicks:
+        return [
+            html.P("لطفاً یک گزینه را از منو انتخاب کنید.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+            "داشبورد تشخیص دیابت"
+        ]
+
+    elif triggered_id == 'overview-item' and overview_clicks:
+        return [
+            html.Div([
+                html.P("""
+                اهداف اصلی:
+                - تحلیل اکتشافی داده‌ها (EDA) برای درک توزیع و روابط ویژگی‌ها.
+                - تشخیص و مدیریت ناهنجاری‌ها و مقادیر گمشده.
+                - آموزش مدل‌های مختلف کلاسیفیکیشن و انتخاب بهترین (Gradient Boosting بعد از حذف ناهنجاری‌ها).
+                - ایجاد داشبورد برای پیش‌بینی دیابت و پیشنهاد برنامه‌های شخصی‌سازی‌شده بر اساس ویژگی‌های کلیدی.
+                این داشبورد با Dash ساخته شده و روی Render دیپلوی می‌شود.
+                """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+                html.Img(src='../img/img1.png', style={'width': '50%', 'margin': '20px auto', 'display': 'block'}, alt="تصویر داشبورد"),
+                html.P("تصویر بارگذاری نشد.", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '16px', 'color': '#FF0000', 'margin': '10px'}),
+                html.P("""
+                مزایا و کاربردهای داشبورد:
+                این داشبورد امکان پیش‌بینی دقیق احتمال ابتلا به دیابت را فراهم می‌کند و پیشنهادات شخصی‌سازی‌شده برای رژیم غذایی و ورزش ارائه می‌دهد. مزایای آن شامل دقت بالا در مدل‌سازی، دسترسی آسان برای کاربران، و کمک به پیشگیری از بیماری است. کاربردها عبارتند از استفاده در کلینیک‌ها برای غربالگری، ادغام با اپلیکیشن‌های سلامت، و تحقیقات پزشکی برای تحلیل داده‌های بزرگ.
+                """, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'})
+            ]),
+            "اهداف داشبورد"
+        ]
 
     elif triggered_id == 'eda-item' and eda_clicks:
         figs = []
@@ -220,11 +235,14 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
             figs.append(dcc.Graph(figure=fig_hist, style=GRAPH_STYLE))
         fig_box = px.box(df, y=['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure'], title="باکس پلات ویژگی‌ها")
         fig_scatter = px.scatter(df, x='Glucose', y='BMI', color='Outcome', title='اسکتر پلات Glucose vs BMI', color_continuous_scale='RdBu')
-        return html.Div([
-            *figs,
-            dcc.Graph(figure=fig_box, style=GRAPH_STYLE),
-            dcc.Graph(figure=fig_scatter, style=GRAPH_STYLE)
-        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
+        return [
+            html.Div([
+                *figs,
+                dcc.Graph(figure=fig_box, style=GRAPH_STYLE),
+                dcc.Graph(figure=fig_scatter, style=GRAPH_STYLE)
+            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}),
+            "تحلیل‌های اولیه داده‌ها"
+        ]
 
     elif triggered_id == 'advanced-item' and advanced_clicks:
         corr = df.corr()
@@ -239,14 +257,17 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
         fig_reg = px.scatter(df, x='BMI', y='Glucose', title='رگرسیون خطی: BMI vs Glucose')
         fig_reg.add_scatter(x=X['BMI'], y=y_pred, mode='lines', name='خط رگرسیون', line=dict(color='red'))
         return [
-            dcc.Graph(figure=fig_corr, style=GRAPH_STYLE),
-            html.P(f"تعداد داده‌های حذف شده: {num_removed}", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
-            html.P("""
-            تحلیل تکمیلی شامل:
-            - شناسایی ناهنجاری‌ها با IsolationForest.
-            - رگرسیون خطی برای پیش‌بینی Glucose بر اساس BMI.
-            - ماتریس کورلیشن برای بررسی روابط.
-            """, style={**BASE_STYLE, 'margin': '20px'})
+            [
+                dcc.Graph(figure=fig_corr, style=GRAPH_STYLE),
+                html.P(f"تعداد داده‌های حذف شده: {num_removed}", style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
+                html.P("""
+                تحلیل تکمیلی شامل:
+                - شناسایی ناهنجاری‌ها با IsolationForest.
+                - رگرسیون خطی برای پیش‌بینی Glucose بر اساس BMI.
+                - ماتریس کورلیشن برای بررسی روابط.
+                """, style={**BASE_STYLE, 'margin': '20px'})
+            ],
+            "تحلیل‌های تکمیلی"
         ]
 
     elif triggered_id == 'models-item' and models_clicks:
@@ -254,50 +275,59 @@ def update_page(overview_clicks, eda_clicks, advanced_clicks, models_clicks, pre
                                  'Accuracy': [0.75, '0.72', 0.70, 0.78, 0.80, 0.82, 0.79, 0.76]})
         fig_cm = px.imshow([[50, 10], [8, 60]], text_auto=True, color_continuous_scale='Blues', title='ماتریس درهم‌ریختگی (نمونه)')
         return [
-            html.P("""
-            مدل‌های تست‌شده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
-            بهترین مدل: Gradient Boosting روی داده‌های پاک‌شده (بعد از حذف ناهنجاری‌ها) با دقت بالا.
-            ارزیابی شامل Accuracy, Precision, Recall, F1-Score, ROC-AUC و Cross-Validation.
-            """, style={**BASE_STYLE, 'margin': '20px'}),
-            dash_table.DataTable(
-                data=results_df.to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in results_df.columns],
-                style_table=TABLE_STYLE,
-                style_cell=TABLE_ROW_STYLE,
-                style_header=TABLE_HEADER_STYLE
-            ),
-            dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
+            [
+                html.P("""
+                مدل‌های تست‌شده: Logistic Regression, KNN, Decision Tree, Random Forest, XGBoost, Gradient Boosting, LightGBM, MLP.
+                بهترین مدل: Gradient Boosting روی داده‌های پاک‌شده (بعد از حذف ناهنجاری‌ها) با دقت بالا.
+                ارزیابی شامل Accuracy, Precision, Recall, F1-Score, ROC-AUC و Cross-Validation.
+                """, style={**BASE_STYLE, 'margin': '20px'}),
+                dash_table.DataTable(
+                    data=results_df.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in results_df.columns],
+                    style_table=TABLE_STYLE,
+                    style_cell=TABLE_ROW_STYLE,
+                    style_header=TABLE_HEADER_STYLE
+                ),
+                dcc.Graph(figure=fig_cm, style=GRAPH_STYLE)
+            ],
+            "مدل‌های طبقه‌بندی و ارزیابی"
         ]
 
     elif triggered_id == 'predict-item' and predict_clicks:
-        return html.Div([
-            html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style={**BASE_STYLE, 'margin': '20px'}),
-            *[html.Div([
-                html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={**BASE_STYLE, 'margin': '20px'}),
-                dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style=INPUT_STYLE)
-            ]) for feature in ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']],
-            dcc.Dropdown(
-                id='model-choice',
-                options=[{'label': 'Gradient Boosting (بهترین تک مدل)', 'value': 'gb'}, {'label': 'Voting (سه مدل برتر)', 'value': 'voting'}],
-                value='gb',
-                style=INPUT_STYLE
-            ),
-            html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style=BUTTON_STYLE),
-            html.Div(id='prediction-output', style=OUTPUT_STYLE)
-        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
+        return [
+            html.Div([
+                html.Label("ویژگی‌ها را وارد کنید تا مدل پیش‌بینی کند.", style={**BASE_STYLE, 'margin': '20px'}),
+                *[html.Div([
+                    html.Label(f"{feature} (عدد {'صحیح' if feature in ['Pregnancies', 'Age'] else 'اعشاری'})", style={**BASE_STYLE, 'margin': '20px'}),
+                    dcc.Input(id=f'input-{feature}', type='number', value=0 if feature in ['Pregnancies', 'Age'] else 0.0, step=1 if feature in ['Pregnancies', 'Age'] else 0.1, style=INPUT_STYLE)
+                ]) for feature in ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']],
+                dcc.Dropdown(
+                    id='model-choice',
+                    options=[{'label': 'Gradient Boosting (بهترین تک مدل)', 'value': 'gb'}, {'label': 'Voting (سه مدل برتر)', 'value': 'voting'}],
+                    value='gb',
+                    style=INPUT_STYLE
+                ),
+                html.Button('پیش‌بینی', id='predict-button', n_clicks=0, style=BUTTON_STYLE),
+                html.Div(id='prediction-output', style=OUTPUT_STYLE)
+            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}),
+            "پیش‌بینی دیابت"
+        ]
 
     elif triggered_id == 'recommendations-item' and recommendations_clicks:
-        return html.Div([
-            html.Label("بر اساس ویژگی‌های کلیدی: Glucose, BMI, Age, Insulin, BloodPressure, Pregnancies", style={**BASE_STYLE, 'margin': '20px'}),
-            *[html.Div([
-                html.Label(feature, style={**BASE_STYLE, 'margin': '20px'}),
-                dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature in ['Age', 'Pregnancies'] else 0.0, step=1 if feature in ['Age', 'Pregnancies'] else 0.1, style=INPUT_STYLE)
-            ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure', 'Pregnancies']],
-            html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style=BUTTON_STYLE),
-            html.Button('دانلود برنامه به صورت PDF', id='download-button', n_clicks=0, style={**BUTTON_STYLE, 'backgroundColor': '#008000', 'margin': '20px'}),
-            dcc.Download(id='download-pdf'),
-            html.Div(id='recommend-output', style=OUTPUT_STYLE)
-        ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'})
+        return [
+            html.Div([
+                html.Label("بر اساس ویژگی‌های کلیدی: Glucose, BMI, Age, Insulin, BloodPressure, Pregnancies", style={**BASE_STYLE, 'margin': '20px'}),
+                *[html.Div([
+                    html.Label(feature, style={**BASE_STYLE, 'margin': '20px'}),
+                    dcc.Input(id=f'rec-input-{feature}', type='number', value=0 if feature in ['Age', 'Pregnancies'] else 0.0, step=1 if feature in ['Age', 'Pregnancies'] else 0.1, style=INPUT_STYLE)
+                ]) for feature in ['Glucose', 'BMI', 'Age', 'Insulin', 'BloodPressure', 'Pregnancies']],
+                html.Button('دریافت پیشنهاد', id='recommend-button', n_clicks=0, style=BUTTON_STYLE),
+                html.Button('دانلود برنامه به صورت PDF', id='download-button', n_clicks=0, style={**BUTTON_STYLE, 'backgroundColor': '#008000', 'margin': '20px'}),
+                dcc.Download(id='download-pdf'),
+                html.Div(id='recommend-output', style=OUTPUT_STYLE)
+            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}),
+            "پیشنهاد برنامه غذایی و ورزشی"
+        ]
 
 # کال‌بک برای پیش‌بینی
 @app.callback(
@@ -493,7 +523,7 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-    
+
 # برای WSGI (مثل waitress)
 application = app.server  # این خط شیء WSGI رو از Dash می‌سازه
 if __name__ == '__main__':
