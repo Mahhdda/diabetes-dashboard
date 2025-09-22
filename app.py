@@ -13,25 +13,33 @@ from sklearn.svm import SVC
 import base64
 from io import BytesIO
 from xhtml2pdf import pisa  # برای تولید PDF
+import random
+
+# اضافه برای ثبت فونت
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+pdfmetrics.registerFont(TTFont('Vazir', 'vazir-font-v16.1.0/Vazir-Medium.ttf'))  # ثبت فونت از پوشه Vazir
 
 # تعریف استایل‌های مشترک
 BASE_STYLE = {
     'direction': 'rtl',
     'textAlign': 'right',
     'fontFamily': 'Vazir, sans-serif',
-    'fontSize': '18px',  # افزایش سایز فونت پایه
-    'border-radius': '27px',  # حاشیه 20 پیکسل برای هر باکس
-    'lineHeight': '1.7'  # افزایش line space
+    'fontSize': '18px',
+    'border-radius': '27px',
+    'lineHeight': '1.7'
 }
 
+#تعریف استایل هدر
 HEADER_STYLE = {
     **BASE_STYLE,
-    'color': '#1e3a8a',  # آبی تیره
-    'textAlign': 'center',  # وسط‌چین کردن تایتل
-    'fontSize': '30px'  # افزایش سایز فونت هدر به 28px
+    'color': '#1e3a8a',
+    'textAlign': 'center',
+    'fontSize': '30px',
+    'lineHeight': '1.7'
 }
 
-# استایل جدید برای هدر اصلی
+# استایل برای هدر اصلی
 MAIN_HEADER_STYLE = {
     'background': 'linear-gradient(to bottom, #ebfdff, #ffffff)',
     'padding': '20px',
@@ -193,8 +201,10 @@ OUTPUT_STYLE = {
 TABLE_STYLE = {
     **BASE_STYLE,
     'width': '100%',
-    'maxWidth': '800px',
-    'borderCollapse': 'collapse'
+    'maxWidth': '275px',
+    'borderCollapse': 'collapse',
+    'white-space': 'normal',
+    'margin': '20px 0px'
 }
 
 TABLE_HEADER_STYLE = {
@@ -207,7 +217,9 @@ TABLE_HEADER_STYLE = {
 TABLE_ROW_STYLE = {
     **BASE_STYLE,
     'padding': '12px',
-    'border': '1px solid #e2e8f0'
+    'maxWidth': '275px',
+    'border': '1px solid #e2e8f0',
+    'white-space': 'normal'
 }
 
 GRAPH_STYLE = {
@@ -496,6 +508,70 @@ def predict_diabetes(n_clicks, pregnancies, glucose, blood_pressure, skin_thickn
             return html.P("خطا در پیش‌بینی: ممکن است ویژگی‌ها با مدل سازگار نباشند.", style={**OUTPUT_STYLE, 'color': '#FF0000'})
     return html.P("لطفاً مقادیر را وارد کنید.", style=OUTPUT_STYLE)
 
+# دیتاست ساده غذاها برای GA
+foods_df = pd.DataFrame({
+    'food': ['تخم‌مرغ', 'اسفناج', 'گوجه‌فرنگی', 'نان جو', 'سیب', 'بادام', 'چای سبز', 'مرغ گریل', 'کینوا', 'خیار', 'کاهو', 'هویج', 'روغن زیتون', 'ماست یونانی', 'توت', 'دارچین', 'ماهی سالمون', 'بروکلی', 'کدو', 'برنج قهوه‌ای'],
+    'calories': [70, 23, 18, 80, 52, 579 / 100 * 10, 0, 165 / 100 * 150, 160 / 100 * 50, 15, 5, 10, 884 / 100 * 5, 59 / 100 * 150, 30 / 100 * 50, 0, 206 / 100 * 150, 28, 16, 111 / 100 * 25],
+    'protein': [6, 2.9, 0.9, 3, 0.3, 21 / 100 * 10, 0, 31 / 100 * 150, 4 / 100 * 50, 0.7, 0.9, 0.6, 0, 10 / 100 * 150, 0.6 / 100 * 50, 0, 25 / 100 * 150, 2.5, 1.3, 2.5 / 100 * 25],
+    'carb': [1, 3.6, 3.9, 15, 14, 22 / 100 * 10, 0, 0, 30 / 100 * 50, 3, 1, 2, 0, 6 / 100 * 150, 8 / 100 * 50, 0, 0, 5, 3, 23 / 100 * 25],
+    'fat': [5, 0.4, 0.2, 1, 0.2, 49 / 100 * 10, 0, 3.6 / 100 * 150, 1 / 100 * 50, 0.2, 0.1, 0.2, 9 / 100 * 5, 0.5 / 100 * 150, 0.2 / 100 * 50, 0, 13 / 100 * 150, 0.3, 0.2, 0.5 / 100 * 25],
+    'gi': [0, 15, 38, 55, 39, 0, 0, 0, 53, 15, 10, 25, 0, 0, 32, 0, 0, 15, 20, 50]  # GI تقریبی
+})
+
+# تابع فیتنس برای GA
+def fitness(individual, target_calories, carb_ratio, protein_ratio, fat_ratio, gi_limit=55):
+    selected = foods_df.iloc[individual]
+    total_cal = selected['calories'].sum()
+    total_pro = selected['protein'].sum()
+    total_carb = selected['carb'].sum()
+    total_fat = selected['fat'].sum()
+    avg_gi = selected['gi'].mean()
+    
+    if total_cal == 0:
+        return -np.inf
+    
+    cal_diff = abs(total_cal - target_calories)
+    pro_diff = abs(total_pro / total_cal - protein_ratio)
+    carb_diff = abs(total_carb / total_cal - carb_ratio)
+    fat_diff = abs(total_fat / total_cal - fat_ratio)
+    gi_penalty = max(0, avg_gi - gi_limit) * 100
+    
+    return -(cal_diff + pro_diff*1000 + carb_diff*1000 + fat_diff*1000 + gi_penalty)  # منفی برای ماکسیمایز
+
+# الگوریتم ژنتیک ساده برای انتخاب غذاها برای یک وعده
+def genetic_meal_optimizer(pop_size=50, generations=20, meal_size=5, target_calories=400, carb_ratio=0.5, protein_ratio=0.2, fat_ratio=0.3, gi_limit=55):
+    num_foods = len(foods_df)
+    # جمعیت اولیه: لیست ایندکس‌های غذاها
+    population = [random.sample(range(num_foods), meal_size) for _ in range(pop_size)]
+    
+    for gen in range(generations):
+        # ارزیابی فیتنس
+        fitnesses = [fitness(ind, target_calories, carb_ratio, protein_ratio, fat_ratio, gi_limit) for ind in population]
+        min_fit = min(fitnesses)
+        weights = [f - min_fit + 1 for f in fitnesses]  # برای جلوگیری از وزن منفی
+        
+        # انتخاب والدین
+        selected = [random.choices(population, weights=weights, k=2) for _ in range(pop_size)]
+        
+        # کراس‌اوور و موتیشن
+        new_pop = []
+        for parents in selected:
+            crossover_point = random.randint(1, meal_size - 1)
+            child = parents[0][:crossover_point] + parents[1][crossover_point:]
+            if random.random() < 0.1:  # نرخ موتیشن
+                mutate_idx = random.randint(0, meal_size - 1)
+                child[mutate_idx] = random.randint(0, num_foods - 1)
+            new_pop.append(child)
+        
+        population = new_pop
+    
+    # بهترین فرد
+    best_ind = population[np.argmax([fitness(ind, target_calories, carb_ratio, protein_ratio, fat_ratio, gi_limit) for ind in population])]
+    selected_foods = foods_df.iloc[best_ind]
+    suggestion = ', '.join(selected_foods['food']) + f" (کالری تقریبی: {selected_foods['calories'].sum():.0f})"
+    tip = f"پروتئین: {selected_foods['protein'].sum():.1f}g, کربوهیدرات: {selected_foods['carb'].sum():.1f}g, چربی: {selected_foods['fat'].sum():.1f}g, GI متوسط: {selected_foods['gi'].mean():.1f}"
+    return suggestion, tip
+
 # تابع برای تولید محتوای PDF
 def generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies, diet, meal_plan, sleep, exercise, walking, alerts):
     return f"""
@@ -504,7 +580,7 @@ def generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies
     <head>
         <meta charset="UTF-8">
         <style>
-            body {{ font-family: 'DejaVu Sans', sans-serif; direction: rtl; text-align: right; font-size: 18px; margin: 20px; line-height: 1.7; }}
+            body {{ font-family: 'Vazir', sans-serif; direction: rtl; text-align: right; font-size: 18px; margin: 20px; line-height: 1.7; }}
             h1 {{ color: #1e3a8a; text-align: center; font-size: 24px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             th, td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: right; }}
@@ -558,87 +634,111 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
         if pregnancies > 6:
             alerts.append("هشدار: تعداد بالای بارداری ممکن است خطر دیابت را افزایش دهد. با پزشک مشورت کنید.")
 
-        # محاسبه کالری روزانه تخمینی
-        bmr = 10 * bmi + 6.25 * 170 - 5 * age + 5  # فرض قد متوسط 170cm
-        daily_calories = bmr * 1.2 if bmi > 25 else bmr * 1.5
+        # محاسبه BMR با فرمول Mifflin-St Jeor (فرض زنان، زیرا داده‌های PIMA برای زنان است)
+        height = 160  # cm, متوسط برای زنان
+        weight = bmi * (height / 100) ** 2
+        bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)  # برای زنان
+        activity_level = 1.2 if bmi > 25 else 1.375  # sedentary یا lightly active
+        daily_calories = bmr * activity_level
 
-        # رژیم غذایی
-        diet = "برنامه غذایی شخصی‌سازی‌شده: "
-        if glucose > 140:
-            diet += "تمرکز روی غذاهای با شاخص گلیسمیک پایین (GI < 55). اجتناب از شکر و کربوهیدرات‌های ساده. "
-        if bmi > 25:
-            diet += f"کالری روزانه پیشنهادی: {int(daily_calories)} کالری برای کاهش وزن. "
-            diet += "اجتناب از فست‌فود و نوشابه‌ها. "
+        # محاسبه ریسک دیابت بر اساس ویژگی‌ها (الگوریتم ساده مبتنی بر امتیاز)
+        risk_score = 0
+        if glucose > 140: risk_score += 5
+        if bmi > 25: risk_score += 3
+        if age > 45: risk_score += 2
+        if insulin > 100: risk_score += 4
+        if blood_pressure > 120: risk_score += 2
+        if pregnancies > 3: risk_score += 1
+        risk_level = 'بالا' if risk_score > 10 else 'متوسط' if risk_score > 5 else 'پایین'
+
+        # رژیم غذایی با الگوریتم مبتنی بر ریسک و نیازهای مغذی
+        diet = f"برنامه غذایی شخصی‌سازی‌شده بر اساس ریسک {risk_level} با استفاده از الگوریتم ژنتیک برای بهینه‌سازی وعده‌ها: "
+        carb_ratio = 0.45 if glucose > 140 else 0.55  # کاهش کربوهیدرات اگر گلوکز بالا
+        protein_ratio = 0.25 if bmi > 25 else 0.20
+        fat_ratio = 1 - carb_ratio - protein_ratio
+        diet += f"کالری روزانه پیشنهادی: {int(daily_calories)} کالری (کربوهیدرات: {int(carb_ratio*100)}%، پروتئین: {int(protein_ratio*100)}%، چربی: {int(fat_ratio*100)}%). "
+        if risk_level == 'بالا':
+            diet += "تمرکز شدید روی غذاهای با GI پایین (<55)، فیبر بالا (>30g روزانه)، و کاهش سدیم (<2300mg). اجتناب کامل از شکر افزوده و کربوهیدرات‌های تصفیه‌شده. "
+        elif risk_level == 'متوسط':
+            diet += "تعادل غذاها با GI متوسط (55-70)، افزایش مصرف میوه و سبزیجات (5 وعده روزانه)، و کنترل بخش‌ها برای مدیریت وزن. "
         else:
-            diet += f"کالری روزانه پیشنهادی: {int(daily_calories)} کالری برای حفظ وزن. تعادل کربوهیدرات (45-65%)، پروتئین (10-35%) و چربی (20-35%). "
+            diet += "رژیم متعادل با تمرکز روی غذاهای کامل، غلات کامل، و چربی‌های سالم. "
         if pregnancies > 0:
-            diet += "برای زنان باردار: افزایش مصرف فولات و آهن از سبزیجات برگ‌دار و گوشت بدون چربی. "
+            diet += "برای زنان با سابقه بارداری: افزایش مصرف کلسیم (1000mg روزانه) و ویتامین D از لبنیات کم‌چرب و ماهی. "
 
-        # جدول برنامه غذایی
-        meal_plan = pd.DataFrame({
-            'وعده': ['صبحانه', 'میان‌وعده', 'ناهار', 'میان‌وعده', 'شام'],
-            'پیشنهاد': [
-                'تخم‌مرغ آب‌پز با سبزیجات و نان جو کامل (300 کالری)',
-                'یک سیب متوسط با بادام (200 کالری)',
-                'سالاد مرغ گریل با کینوا و سبزیجات (500 کالری)',
-                'ماست کم‌چرب با توت‌ها (150 کالری)',
-                'ماهی سالمون کبابی با بروکلی و برنج قهوه‌ای (400 کالری)'
-            ],
-            'نکته': [
-                'پروتئین بالا برای کنترل قند خون',
-                'فیبر بالا برای احساس سیری',
-                'تعادل پروتئین و کربوهیدرات پیچیده',
-                'کم‌شکر برای جلوگیری از پیک انسولین',
-                'اسیدهای چرب امگا-3 برای سلامت قلب'
-            ]
-        })
-        if glucose > 140 or insulin > 100:
-            meal_plan['پیشنهاد'] = meal_plan['پیشنهاد'].apply(lambda x: x + ' (کم GI)')
+        # استفاده از GA برای بهینه‌سازی وعده‌ها
+        meal_names = ['صبحانه', 'میان‌وعده صبح', 'ناهار', 'میان‌وعده عصر', 'شام']
+        meal_calories = [daily_calories * 0.25, daily_calories * 0.1, daily_calories * 0.3, daily_calories * 0.1, daily_calories * 0.25]  # توزیع تقریبی
+        gi_limit = 40 if risk_level == 'بالا' else 55
+        
+        meal_plan_data = []
+        for meal, cal in zip(meal_names, meal_calories):
+            suggestion, tip = genetic_meal_optimizer(target_calories=cal, carb_ratio=carb_ratio, protein_ratio=protein_ratio, fat_ratio=fat_ratio, gi_limit=gi_limit)
+            meal_plan_data.append({'وعده': meal, 'پیشنهاد': suggestion, 'نکته': tip})
+        
+        meal_plan_df = pd.DataFrame(meal_plan_data)
+
+        # شخصی‌سازی اضافی بر اساس شرط‌ها
+        if risk_level == 'بالا' or glucose > 140 or insulin > 100:
+            meal_plan_df['پیشنهاد'] = meal_plan_df['پیشنهاد'].apply(lambda x: x + ' - تمرکز روی GI پایین')
+            meal_plan_df['نکته'] = meal_plan_df['نکته'].apply(lambda x: x + ' کنترل دقیق بخش‌ها برای جلوگیری از پیک انسولین.')
+        if bmi > 25:
+            meal_plan_df['پیشنهاد'] = meal_plan_df['پیشنهاد'].apply(lambda x: x + ' - کاهش کالری')
+            meal_plan_df['نکته'] = meal_plan_df['نکته'].apply(lambda x: x + ' هدف: کاهش وزن 0.5-1kg در هفته.')
+        if pregnancies > 3:
+            meal_plan_df['پیشنهاد'] = meal_plan_df['پیشنهاد'].apply(lambda x: x + ' - اضافه کردن منابع آهن و فولات')
+            meal_plan_df['نکته'] = meal_plan_df['نکته'].apply(lambda x: x + ' برای حمایت از سلامت باروری.')
 
         diet_table = dash_table.DataTable(
-            data=meal_plan.to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in meal_plan.columns],
+            data=meal_plan_df.to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in meal_plan_df.columns],
             style_table=TABLE_STYLE,
             style_cell=TABLE_ROW_STYLE,
             style_header=TABLE_HEADER_STYLE
         )
 
-        # خواب
-        sleep = "خواب کافی: "
+        # خواب با الگوریتم مبتنی بر سن و ریسک
+        sleep = "خواب کافی شخصی‌سازی‌شده: "
+        recommended_sleep = 7.5 - (0.5 if age > 50 else 0) + (1 if risk_level == 'بالا' else 0)  # افزایش خواب برای ریسک بالا
+        sleep += f"{recommended_sleep:.1f} ساعت در شب. "
         if age < 30:
-            sleep += "8-9 ساعت در شب. نکته: اتاق تاریک و خنک برای کیفیت بهتر خواب."
+            sleep += "نکته: روتین خواب منظم با خاموش کردن دستگاه‌ها 1 ساعت قبل از خواب برای کیفیت بهتر."
         elif age < 50:
-            sleep += "7-8 ساعت. نکته: اجتناب از کافئین بعد از ظهر."
+            sleep += "نکته: اجتناب از کافئین بعد از 3 بعدازظهر و تمرین تنفس عمیق برای کاهش استرس."
         else:
-            sleep += "6-7 ساعت، با چرت کوتاه 20 دقیقه‌ای روزانه. نکته: روتین خواب منظم."
+            sleep += "نکته: چرت کوتاه 20-30 دقیقه‌ای روزانه اگر لازم، اما نه نزدیک به زمان خواب شب."
 
-        # ورزش
+        # ورزش با الگوریتم مبتنی بر BMI و فشار خون
         exercise = "برنامه ورزشی شخصی: "
-        if bmi > 25 or insulin > 100:
-            exercise += "45-60 دقیقه روزانه: 30 دقیقه ایروبیک (دویدن یا دوچرخه) + 15 دقیقه وزنه‌برداری سبک. "
-            exercise += "هدف: سوزاندن 300-500 کالری در جلسه."
+        intensity = 'شدید' if bmi > 25 or insulin > 100 else 'متوسط'
+        duration = 45 if intensity == 'شدید' else 30
+        exercise += f"{duration}-60 دقیقه روزانه با شدت {intensity}: "
+        if intensity == 'شدید':
+            exercise += "ترکیب 30 دقیقه کاردیو (دویدن، دوچرخه‌سواری با سرعت بالا) + 20 دقیقه تمرین قدرتی (وزنه‌برداری سبک یا بدنسازی). هدف: سوزاندن 400-600 کالری در جلسه برای کاهش وزن. "
         else:
-            exercise += "30 دقیقه متوسط: یوگا، شنا یا پیاده‌روی سریع. "
-            exercise += "هدف: حفظ تناسب اندام و کنترل قند."
+            exercise += "ترکیب 20 دقیقه کاردیو (شنا، پیاده‌روی سریع) + 10 دقیقه کششی (یوگا). هدف: حفظ تناسب و کنترل قند. "
         if blood_pressure > 120:
-            exercise += "تمرکز روی ورزش‌های آرام‌بخش مثل یوگا برای کاهش فشار خون."
+            exercise += "تمرکز روی ورزش‌های ایزومتریک و آرام‌بخش مانند یوگا یا پیلاتس برای کاهش فشار خون بدون فشار زیاد."
+        exercise += "نکته: شروع آهسته و نظارت بر ضربان قلب (هدف: 50-70% حداکثر ضربان)."
 
-        # پیاده‌روی
-        walking = "پیاده‌روی: "
-        if bmi > 25:
-            walking += "حداقل 10000 قدم روزانه (تقریباً 8 کیلومتر، سوزاندن ~400 کالری). "
-        else:
-            walking += "حداقل 5000 قدم (سوزاندن ~200 کالری). "
-        walking += "نکته: استفاده از اپ‌هایی مثل Google Fit برای پیگیری و چالش‌های روزانه."
+        # پیاده‌روی با الگوریتم مبتنی بر BMI و سن
+        walking = "پیاده‌روی روزانه: "
+        steps = 10000 if bmi > 25 else 7000 if age > 50 else 5000
+        distance = steps / 1250  # تقریبی 1250 قدم = 1km
+        calories_burned = steps * 0.04  # تقریبی
+        walking += f"حداقل {steps} قدم (تقریباً {distance:.1f} کیلومتر، سوزاندن ~{int(calories_burned)} کالری). "
+        if risk_level == 'بالا':
+            walking += "تقسیم به 3 جلسه 20 دقیقه‌ای برای کنترل بهتر قند خون. "
+        walking += "نکته: استفاده از اپ‌هایی مثل Google Fit یا Strava برای پیگیری، تنظیم چالش‌های هفتگی و پیاده‌روی در طبیعت برای کاهش استرس."
 
-        # نمودار توزیع کالری
-        fig_calories = px.pie(values=[daily_calories * 0.5, daily_calories * 0.3, daily_calories * 0.2], 
+        # نمودار توزیع کالری (حفظ شده بدون تغییر)
+        fig_calories = px.pie(values=[daily_calories * carb_ratio, daily_calories * protein_ratio, daily_calories * fat_ratio], 
                               names=['کربوهیدرات', 'پروتئین', 'چربی'], 
                               title='توزیع پیشنهادی کالری روزانه',
                               color_discrete_sequence=px.colors.sequential.Blues)
 
         # تولید محتوای PDF
-        pdf_content = generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies, diet, meal_plan, sleep, exercise, walking, alerts)
+        pdf_content = generate_pdf_content(glucose, bmi, age, insulin, blood_pressure, pregnancies, diet, meal_plan_df, sleep, exercise, walking, alerts)
         output = BytesIO()
         pisa.CreatePDF(pdf_content, dest=output)
         pdf_data = output.getvalue()
@@ -653,7 +753,7 @@ def get_recommendations(recommend_clicks, download_clicks, glucose, bmi, age, in
             html.P(exercise, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             html.P(walking, style={'direction': 'rtl', 'text-align': 'right', 'fontSize': '18px', 'margin': '20px'}),
             dcc.Graph(figure=fig_calories, style=GRAPH_STYLE),
-            html.P("نکته کلی: این پیشنهادات عمومی هستند. برای برنامه دقیق، با پزشک مشورت کنید.", style={'direction': 'rtl', 'text-align': 'right', 'color': '#FF0000', 'fontSize': '18px', 'margin': '20px'})
+            html.P("نکته کلی: این پیشنهادات با الگوریتم ژنتیک بهینه‌سازی شده‌اند. برای برنامه دقیق، با پزشک مشورت کنید.", style={'direction': 'rtl', 'text-align': 'right', 'color': '#FF0000', 'fontSize': '18px', 'margin': '20px'})
         ]
 
         # اگر دکمه دانلود کلیک شده باشد
